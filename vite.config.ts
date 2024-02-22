@@ -5,7 +5,4 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   base: 'message-io-project',
-  build: {
-    outDir: './docs'
-  }
 })
