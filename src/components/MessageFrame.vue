@@ -19,8 +19,9 @@ const props = defineProps<MessageProps>();
         </div>
       </template>
       <template v-slot:prepend>
-        <v-avatar size="24" class="mr-5">
+        <v-avatar size="32" class="mr-5">
           <v-img
+            class="rounded-circle"
             :src="props.message.author.display_avatar.url"
             alt="avatar"
           ></v-img>
