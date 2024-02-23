@@ -5,8 +5,8 @@ import ChannelFrame from './components/ChannelFrame.vue';
 import { Channel, IncompleteChannel } from './types/response';
 
 interface requestData {
-  channel_id: number | null;
-  next_message_id: number | null;
+  channel_id: string | null;
+  next_message_id: string | null;
   limit: number | null;
 }
 
@@ -14,13 +14,12 @@ const url = 'https://fqrkuiesr2pmebwkgvy7qczw3e0ljzse.lambda-url.us-east-1.on.aw
 const { execute } = useAxios(url, { method: 'POST' }, { immediate: false });
 
 const urlParams = new URLSearchParams(window.location.search);
-const channel_id: any = urlParams.get('channel_id');
-const limit: any = urlParams.get('limit');
 const requestData: requestData = {
-  channel_id: (typeof channel_id) === 'number' ? channel_id : null,
+  channel_id: getIntegerParam('channel_id'),
   next_message_id: null,
-  limit: (typeof limit) === 'number' ? limit : null,
+  limit: getParamConvertNumber('limit')
 }
+console.log(requestData);
 
 const channels = ref<Array<Channel>>([]);
 const incompleteChannelsId = ref<Array<number>>([]);
@@ -48,13 +47,25 @@ async function getResponse() {
   }
 }
 
+function getIntegerParam(paramName: string) {
+  const paramStr = urlParams.get(paramName);
+  const re = /^\d+$/;
+  if (paramStr && re.test(paramStr)) return paramStr
+  return null;
+}
+
+function getParamConvertNumber(paramName: string) {
+  const result = getIntegerParam(paramName);
+  if (result) return parseInt(result);
+  return null;
+}
 </script>
 
 <template>
   <div>
     <channel-frame 
-      v-for="(c, index) in channels" 
-      :key="index"
+      v-for="c in channels" 
+      :key="c.id"
       :guild_name="c.guild.name"
       :category="c.category"
       :channel_name="c.name"
