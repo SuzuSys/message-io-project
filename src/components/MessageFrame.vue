@@ -1,34 +1,38 @@
 <script setup lang="ts">
+import ContentFrame from './ContentFrame.vue';
 import { Message } from '../types/response';
 interface MessageProps {
   message: Message;
-}
+};
 const props = defineProps<MessageProps>();
-</script>
 
+</script>
 <template>
   <div>
     <v-card
-      class="mx-auto"
-      :subtitle="props.message.created_at"
+      class="mx-auto my-2"
       rounded="0"
+      variant="text"
     >
-      <template v-slot:title class="text-h5">
-        <div class="text-subtitle-1">
-          {{ props.message.author.display_name }}
-        </div>
-      </template>
-      <template v-slot:prepend>
-        <v-avatar size="32" class="mr-5">
-          <v-img
-            class="rounded-circle"
-            :src="props.message.author.display_avatar.url"
-            alt="avatar"
-          ></v-img>
-        </v-avatar>
-      </template>
       <v-card-text>
-        {{ props.message.content }}
+        <v-row>
+          <v-col class="flex-grow-0 flex-shrink-0">
+            <v-avatar 
+              style="width: 36px; height: 36px"
+              :image="props.message.author.display_avatar.url" 
+            />
+          </v-col>
+          <v-col
+            class="flex-grow-1 flex-shrink-0"
+          >
+            {{ props.message.author.display_name }}<br>
+            {{ props.message.created_at }}
+            <span v-if="props.message.edited_at">( edited at {{ props.message.edited_at }} )</span>
+          </v-col>
+        </v-row>
+        <v-row class="px-5">
+          <content-frame :content="props.message.content" />
+        </v-row>
       </v-card-text>
     </v-card>
   </div>

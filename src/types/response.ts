@@ -1,25 +1,25 @@
 export interface Channel {
-  id: number;
+  id: string;
   name: string;
   guild: {
-    id: number;
+    id: string;
     name: string;
   };
   category: null | {
-    id: number;
+    id: string;
     name: string;
   };
   messages: Array<Message>
 }
 
 export interface IncompleteChannel {
-  id: number;
+  id: string;
 }
 
 export interface Message {
-  id: number;
+  id: string;
   author: {
-    id: number;
+    id: string;
     name: string;
     display_name: string;
     nick: null | string;
@@ -29,7 +29,7 @@ export interface Message {
       animated: boolean;
     };
     roles: null | Array<{
-      id: number;
+      id: string;
       name: string;
       color: string;
     }>;
@@ -46,28 +46,47 @@ export interface Message {
   reactions: Array<{
     count: number;
     emoji_obj: {
-      id: null | number;
+      id: null | string;
       url: string;
       animated: boolean;
     } | string;
     users: Array<{
-      id: number;
+      id: string;
       name: string;
       display_name: string;
       nick: null | string;
     }>
   }>;
   stickers: Array<{
-    id: number;
+    id: string;
     name: string;
     url: string;
   }>;
+  mentions: Array<{
+    id: string;
+    name: string;
+    display_name: string;
+    nick: null | string
+  }>;
+  channel_mentions: Array<{
+    id: string;
+    name: string;
+    category: null | {
+      id: string;
+      name: string;
+    };
+  }>;
+  role_mentions: Array<{
+    id: string;
+    name: string;
+    color: string;
+  }>;
   reference: null | {
-    id: null | number;
+    id: null | string;
   } | {
-    id: number;
+    id: string;
     author: {
-      id: number;
+      id: string;
       name: string;
       display_name: string;
       nick: null | string;
@@ -86,7 +105,7 @@ export interface Message {
       content_type: null | string;
     }>;
     stickers: Array<{
-      id: number;
+      id: string;
       name: string;
       url: string;
     }>;

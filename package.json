@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@quasar/quasar-ui-qmarkdown": "^1.4.4",
     "@vueuse/core": "^10.8.0",
     "@vueuse/integrations": "^10.8.0",
     "axios": "^1.6.7",
