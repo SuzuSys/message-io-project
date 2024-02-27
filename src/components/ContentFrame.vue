@@ -196,7 +196,7 @@ if (res) {
         state.value.z = state.value.z.slice(r.index + r.str.length);
         if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
         info = r.group === 'ul' ? getUlInfo(r.str) : getOlInfo(r.str);
-        const level = (info.spaces + n) / (n + 1);
+        const level = info.spaces === 0 ? 0 : (info.spaces + n) / (n + 1);
         if (currentLevel < level) {
           const parent = elArray.slice(-1)[0];
           parent.child = [];
@@ -222,7 +222,7 @@ if (res) {
         }
       }
     } else if (state.value.z === 'block_quotes') {
-      
+
     }
   }
   if (state.value.matchedKey === 'masked_links') {
