@@ -25,7 +25,7 @@ const props = defineProps<MessageProps>();
           <v-col
             class="flex-grow-1 flex-shrink-0"
           >
-            {{ props.message.author.display_name }}<br>
+            {{ props.message.author.nick ? props.message.author.nick : props.message.author.display_name }}<br>
             {{ props.message.created_at }}
             <span v-if="props.message.edited_at">( edited at {{ props.message.edited_at }} )</span>
           </v-col>
