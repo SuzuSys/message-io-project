@@ -10,9 +10,10 @@ interface RegContent {
 }
 type List = {
   content: string;
+  currentArray: Array<List>;
   child?: Array<List>;
   parent?: List;
-  first_number?: number;
+  first_number?: number; // If the list is ol, this type is number. If ul, then undefined.
 };
 interface MentionReg {
   regexp: RegExp;
@@ -176,14 +177,14 @@ if (res) {
   state.value.y = res.str;
   state.value.z = props.content.slice(res.index + res.str.length);
   if (['ul', 'ol', 'h1', 'h2', 'h3', 'block_quotes'].includes(state.value.matchedKey)) {
-    const res = /^\n/.exec(state.value.z);
-    if (res) state.value.z = state.value.z.slice(1);
+    if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
     if (state.value.matchedKey === 'ul' || state.value.matchedKey === 'ol') {
       let key: 'ul'|'ol' = state.value.matchedKey;
       let elArray: Array<List> = regexps.value[key].li;
       let info = key === 'ul' ? getUlInfo(state.value.y) : getOlInfo(state.value.y);
       elArray.push({
         content: info.content,
+        currentArray: regexps.value[key].li,
         first_number: info.first_number,
       });
       const n = info.n;
@@ -191,19 +192,37 @@ if (res) {
       const ulolreg = new RegExp([regexps.value.ul.regexp, regexps.value.ol.regexp].join('|'), 'm');
       let r;
       while (r = execCaptureGroup(ulolreg, state.value.z)) {
-        if (r.group !== 'ul' && r.group !== 'ol') throw Error();
+        if (r.group !== 'ul' && r.group !== 'ol') throw Error('An impossible error.');
+        state.value.z = state.value.z.slice(r.index + r.str.length);
+        if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
         info = r.group === 'ul' ? getUlInfo(r.str) : getOlInfo(r.str);
         const level = (info.spaces + n) / (n + 1);
         if (currentLevel < level) {
           const parent = elArray.slice(-1)[0];
-          parent.child = [{
+          parent.child = [];
+          parent.child.push({
             content: info.content,
-            first_number: info.first_number,
+            currentArray: parent.child,
             parent,
-          }];
-
+            first_number: info.first_number,
+          });
+          currentLevel += 1;
+        } else {
+          for (let i = level; i < currentLevel; i++) {
+            const arr = elArray.slice(-1)[0].parent?.currentArray;
+            if (!arr) throw Error('An impossible error.');
+            elArray = arr;
+          }
+          elArray.push({
+            content: info.content,
+            currentArray: elArray,
+            parent: currentLevel === 0 ? undefined : elArray[0].parent
+          })
+          currentLevel = level;
         }
       }
+    } else if (state.value.z === 'block_quotes') {
+      
     }
   }
   if (state.value.matchedKey === 'masked_links') {
