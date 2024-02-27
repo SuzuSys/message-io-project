@@ -5,7 +5,7 @@ import { Message } from '../types/response';
 interface ChannelProps {
   guild_name: string;
   category: null | {
-    id: number;
+    id: string;
     name: string;
   };
   channel_name: string;

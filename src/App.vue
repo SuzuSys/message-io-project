@@ -17,12 +17,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const requestData: requestData = {
   channel_id: getIntegerParam('channel_id'),
   next_message_id: null,
-  limit: getParamConvertNumber('limit')
+  limit: getParamConvertNumber('limit'),
 }
 console.log(requestData);
 
 const channels = ref<Array<Channel>>([]);
-const incompleteChannelsId = ref<Array<number>>([]);
+const incompleteChannelsId = ref<Array<string>>([]);
 getResponse();
 
 async function getResponse() {

@@ -8,20 +8,12 @@ interface RegContent {
   regexp: RegExp;
   format: (str: string) => string;
 }
-type Ul = Array<{
+type List = {
   content: string;
-  child?: Ul|Ol;
-  parent?: Ul|Ol;
-}>;
-type Ol = Array<{
-  content: string;
-  parent?: Ul|Ol;
-} | {
-  content: string;
-  first_number: number;
-  child: Ul|Ol;
-  parent?: Ul|Ol;
-}>;
+  child?: Array<List>;
+  parent?: List;
+  first_number?: number;
+};
 interface MentionReg {
   regexp: RegExp;
   display: string;
@@ -45,11 +37,11 @@ interface Reg {
   spoiler_tag: RegContent;
   ul: {
     regexp: RegExp;
-    li: Ul;
+    li: Array<List>;
   };
   ol: {
     regexp: RegExp;
-    li: Ol;
+    li: Array<List>;
   };
   h1: RegContent;
   h2: RegContent;
@@ -188,42 +180,30 @@ if (res) {
     if (res) state.value.z = state.value.z.slice(1);
     if (state.value.matchedKey === 'ul' || state.value.matchedKey === 'ol') {
       let key: 'ul'|'ol' = state.value.matchedKey;
-      let elArray: Ul|Ol = regexps.value[key].li;
-      const res = getListInfo(state.value.y, key);
-      const n = key === 'ol' ? res.number.toString()
-      while () {
-        
-      }
-      // remove leading spaces
-      const res = execNotNull(/^\s*/, state.value.y);
-      state.value.y = state.value.y.slice(res.str.length);
-    }
-    if (state.value.matchedKey === 'ul') {
-      regexps.value.ul.li.push({
-        indent: 0,
-        content: state.value.y.slice(2),
+      let elArray: Array<List> = regexps.value[key].li;
+      let info = key === 'ul' ? getUlInfo(state.value.y) : getOlInfo(state.value.y);
+      elArray.push({
+        content: info.content,
+        first_number: info.first_number,
       });
-      while (state.value.z) {
-        const resUL = regexps.value.ul.regexp.exec(state.value.z);
-        if (resUL && resUL.index === 0) {
-          const resIndent = /^\s*/.exec(resUL[0]);
-          if (!resIndent) break;
-          const space = resIndent[0].length;
-          const indentLevel = space === 0 ? 0 : (space+1)/2;
-          const preIndentLevel = regexps.value.ul.li.slice(0,-1)[0].indent;
-          regexps.value.ul.li.push({
-            indent: Math.min(indentLevel, preIndentLevel+1),
-            content: resUL[0].slice(space),
-          });
-          state.value.z = state.value.z.slice(resUL[0].length);
-          const resLine = /^\n/.exec(state.value.z);
-          if (resLine) state.value.z = state.value.z.slice(1);
-        } else {
-          break;
+      const n = info.n;
+      let currentLevel = 0;
+      const ulolreg = new RegExp([regexps.value.ul.regexp, regexps.value.ol.regexp].join('|'), 'm');
+      let r;
+      while (r = execCaptureGroup(ulolreg, state.value.z)) {
+        if (r.group !== 'ul' && r.group !== 'ol') throw Error();
+        info = r.group === 'ul' ? getUlInfo(r.str) : getOlInfo(r.str);
+        const level = (info.spaces + n) / (n + 1);
+        if (currentLevel < level) {
+          const parent = elArray.slice(-1)[0];
+          parent.child = [{
+            content: info.content,
+            first_number: info.first_number,
+            parent,
+          }];
+
         }
       }
-    } else if (state.value.matchedKey === 'ol') {
-      
     }
   }
   if (state.value.matchedKey === 'masked_links') {
@@ -267,20 +247,33 @@ function execNotNull(re: RegExp, str: string) {
   }
 }
 
-// content contains elements of ul or ol.
-function getUlInfo(content: string) {
+interface ListInfo {
+  spaces: number;
+  content: string;
+  n: number;
+  first_number?: number;
+}
+
+// content contains elements of ul
+function getUlInfo(content: string): ListInfo {
+  const resSpace = execNotNull(/^\s*/, content);
+  const spaces = resSpace.str.length;
+  content = content.slice(spaces);
+  const resContent = execNotNull(/\s+/, content);
+  content = content.slice(resContent.index + resContent.str.length);
+  return { spaces, content, n: 1 };
+}
+// content contains elements of ol
+function getOlInfo(content: string): ListInfo {
   const resSpace = execNotNull(/^\s*/, content);
   const spaces = resSpace.str.length;
   content = content.slice(spaces);
   const resContent = execNotNull(/\s+/, content);
   const c = content.slice(resContent.index + resContent.str.length);
-  if (typeof e) {
-    const res = execNotNull(/^\d+/, content);
-    const number = parseInt(res.str);
-    return { spaces, content: c, number };
-  } else {
-    return { spaces, content: c };
-  }
+  const res = execNotNull(/^\d+/, content);
+  const n = res.str.length;
+  const number = n > 9 ? 1000000000 : parseInt(res.str);
+  return { spaces, content: c, n, first_number: number };
 }
 </script>
 <template>
