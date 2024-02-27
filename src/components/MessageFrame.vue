@@ -31,7 +31,7 @@ const props = defineProps<MessageProps>();
           </v-col>
         </v-row>
         <v-row class="px-5">
-          <content-frame :content="props.message.content" />
+          <content-frame :content="props.message.content" :mention="props.message" />
         </v-row>
       </v-card-text>
     </v-card>

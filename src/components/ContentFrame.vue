@@ -2,6 +2,27 @@
 import { ref } from 'vue';
 interface ContentProps {
   content: string;
+  mention: {
+    mentions: Array<{
+      id: string;
+      name: string;
+      display_name: string;
+      nick: null | string
+    }>;
+    channel_mentions: Array<{
+      id: string;
+      name: string;
+      category: null | {
+        id: string;
+        name: string;
+      };
+    }>;
+    role_mentions: Array<{
+      id: string;
+      name: string;
+      color: string;
+    }>;
+  };
 };
 const props = defineProps<ContentProps>();
 interface RegContent {
@@ -232,8 +253,7 @@ if (res) {
         if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
       }
     }
-  }
-  if (state.value.matchedKey === 'masked_links') {
+  } else if (state.value.matchedKey === 'masked_links') {
     const reDisplay = /^\[(?![^]*https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]]+\s*[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]]+\s*\))[^]*\S+[^]*\]/;
     const resDisplay = reDisplay.exec(state.value.y);
     if (resDisplay) {
@@ -244,7 +264,30 @@ if (res) {
     if (resUrl) {
       regexps.value.masked_links.url = resUrl[0];
     }
-  } 
+  } else if (state.value.matchedKey === 'channel_mention') {
+    const enteredId = execNotNull(/\d+/, state.value.y).str;
+    const channel = props.mention.channel_mentions.find(channel => channel.id === enteredId);
+    if (channel) {
+      if (channel.category) {
+        regexps.value.channel_mention.display = channel.category.name + ' > ';
+      }
+      regexps.value.channel_mention.display += channel.name;
+    } else {
+      regexps.value.channel_mention.display = '不明なチャンネル';
+    }
+  } else if (state.value.matchedKey === 'role_mention') {
+    const enteredId = execNotNull(/\d+/, state.value.y).str;
+    const role = props.mention.role_mentions.find(role => role.id === enteredId);
+    regexps.value.role_mention.display = role ? role.name : '不明なロール';
+  } else if (state.value.matchedKey === 'member_mention') {
+    const enteredId = execNotNull(/\d+/, state.value.y).str;
+    const member = props.mention.mentions.find(member => member.id === enteredId);
+    if (member) {
+      regexps.value.member_mention.display = member.nick ? member.nick : member.display_name;
+    } else {
+      regexps.value.member_mention.display = '不明なユーザー';
+    }
+  }
 }
 
 function execCaptureGroup(re: RegExp, str: string) {
@@ -306,6 +349,6 @@ function getOlInfo(content: string): ListInfo {
 <template>
   <div>
     {{ state.x }}
-    <content-frame v-if="state.matched" :content="state.z"/>
+    <content-frame v-if="state.matched" :content="state.z" :mention="props.mention" />
   </div>
 </template>
