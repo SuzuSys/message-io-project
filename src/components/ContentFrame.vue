@@ -49,7 +49,7 @@ interface Reg {
   h3: RegContent;
   block_quotes: {
     regexp: RegExp;
-    content: string;
+    content: Array<string>;
   };
   channel_mention: MentionReg;
   role_mention: MentionReg;
@@ -130,7 +130,7 @@ const regexps = ref<Reg>({
   },
   block_quotes: {
     regexp: /(?<block_quotes>^>\s+\S+.*$)/m,
-    content: '',
+    content: [],
   },
   channel_mention: {
     regexp: /(?<channel_mention><#\d+>)/m,
@@ -192,6 +192,7 @@ if (res) {
       const ulolreg = new RegExp([regexps.value.ul.regexp, regexps.value.ol.regexp].join('|'), 'm');
       let r;
       while (r = execCaptureGroup(ulolreg, state.value.z)) {
+        if (r.index !== 0) break;
         if (r.group !== 'ul' && r.group !== 'ol') throw Error('An impossible error.');
         state.value.z = state.value.z.slice(r.index + r.str.length);
         if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
@@ -222,7 +223,14 @@ if (res) {
         }
       }
     } else if (state.value.z === 'block_quotes') {
-
+      regexps.value.block_quotes.content.push(state.value.y);
+      let r;
+      while (r = regexps.value.block_quotes.regexp.exec(state.value.z)) {
+        if (r.index !== 0) break;
+        regexps.value.block_quotes.content.push(r[0]);
+        state.value.z = state.value.z.slice(r.index + r[0].length);
+        if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
+      }
     }
   }
   if (state.value.matchedKey === 'masked_links') {
