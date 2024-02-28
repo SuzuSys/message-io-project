@@ -1,81 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import ListFrame from './ListFrame.vue';
+import { Message } from '../types/response';
+import { ListStruct, Reg } from '../types/content';
 interface ContentProps {
   content: string;
   mention: {
-    mentions: Array<{
-      id: string;
-      name: string;
-      display_name: string;
-      nick: null | string
-    }>;
-    channel_mentions: Array<{
-      id: string;
-      name: string;
-      category: null | {
-        id: string;
-        name: string;
-      };
-    }>;
-    role_mentions: Array<{
-      id: string;
-      name: string;
-      color: string;
-    }>;
+    mentions: Message['mentions'];
+    channel_mentions: Message['channel_mentions'];
+    role_mentions: Message['role_mentions'];
   };
 };
 const props = defineProps<ContentProps>();
-interface RegContent {
-  regexp: RegExp;
-  format: (str: string) => string;
-}
-type List = {
-  content: string;
-  currentArray: Array<List>;
-  child?: Array<List>;
-  parent?: List;
-  first_number?: number; // If the list is ol, this type is number. If ul, then undefined.
-};
-interface MentionReg {
-  regexp: RegExp;
-  display: string;
-}
-interface Reg {
-  italics: RegContent;
-  bold: RegContent;
-  bold_italics: RegContent;
-  underline: RegContent;
-  underline_italics: RegContent;
-  underline_bold: RegContent;
-  underline_bold_italics: RegContent;
-  strickthrough: RegContent;
-  masked_links: {
-    regexp: RegExp;
-    display: string;
-    url: string;
-  };
-  code_block: RegContent;
-  code_inline: RegContent;
-  spoiler_tag: RegContent;
-  ul: {
-    regexp: RegExp;
-    li: Array<List>;
-  };
-  ol: {
-    regexp: RegExp;
-    li: Array<List>;
-  };
-  h1: RegContent;
-  h2: RegContent;
-  h3: RegContent;
-  block_quotes: {
-    regexp: RegExp;
-    content: Array<string>;
-  };
-  channel_mention: MentionReg;
-  role_mention: MentionReg;
-  member_mention: MentionReg;
-}
+
 const regexps = ref<Reg>({
   italics: {
     regexp: /(?<italics>(?:\*\S+[^]*\*)|(?:_[^_][^]*_))/m,
@@ -155,20 +92,22 @@ const regexps = ref<Reg>({
   },
   channel_mention: {
     regexp: /(?<channel_mention><#\d+>)/m,
-    display: '',
+    display: '# ',
   },
   role_mention: {
     regexp: /(?<role_mention><@&\d+>)/m,
-    display: '',
+    display: '@ ',
   },
   member_mention: {
     regexp: /(?<member_mention><@&\d+>)/m,
-    display: '',
+    display: '@ ',
   },
 });
+
 interface State {
   matched: boolean;
-  matchedKey: string;
+  matchedKey: keyof Reg;
+  style: 'block' | 'inline';
   x: string;
   y: string;
   z: string;
@@ -176,6 +115,7 @@ interface State {
 interface IncompleteState {
   matched: false;
   matchedKey: undefined;
+  style: 'inline';
   x: string;
   y: undefined;
   z: undefined;
@@ -183,6 +123,7 @@ interface IncompleteState {
 const state = ref<IncompleteState|State>({
   matched: false,
   matchedKey: undefined,
+  style: 'inline',
   x: props.content,
   y: undefined,
   z: undefined,
@@ -197,11 +138,14 @@ if (res) {
   state.value.x = props.content.slice(0, res.index);
   state.value.y = res.str;
   state.value.z = props.content.slice(res.index + res.str.length);
+  if (['ul', 'ol', 'h1', 'h2', 'h3', 'block_quotes', 'code_block'].includes(state.value.matchedKey)) {
+    state.value.style = 'block'
+  }
   if (['ul', 'ol', 'h1', 'h2', 'h3', 'block_quotes'].includes(state.value.matchedKey)) {
     if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
     if (state.value.matchedKey === 'ul' || state.value.matchedKey === 'ol') {
       let key: 'ul'|'ol' = state.value.matchedKey;
-      let elArray: Array<List> = regexps.value[key].li;
+      let elArray: Array<ListStruct> = regexps.value[key].li;
       let info = key === 'ul' ? getUlInfo(state.value.y) : getOlInfo(state.value.y);
       elArray.push({
         content: info.content,
@@ -269,36 +213,40 @@ if (res) {
     const channel = props.mention.channel_mentions.find(channel => channel.id === enteredId);
     if (channel) {
       if (channel.category) {
-        regexps.value.channel_mention.display = channel.category.name + ' > ';
+        regexps.value.channel_mention.display += channel.category.name + ' > ';
       }
       regexps.value.channel_mention.display += channel.name;
     } else {
-      regexps.value.channel_mention.display = '不明なチャンネル';
+      regexps.value.channel_mention.display += '不明なチャンネル';
     }
   } else if (state.value.matchedKey === 'role_mention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const role = props.mention.role_mentions.find(role => role.id === enteredId);
-    regexps.value.role_mention.display = role ? role.name : '不明なロール';
+    regexps.value.role_mention.display += role ? role.name : '不明なロール';
   } else if (state.value.matchedKey === 'member_mention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const member = props.mention.mentions.find(member => member.id === enteredId);
     if (member) {
-      regexps.value.member_mention.display = member.nick ? member.nick : member.display_name;
+      regexps.value.member_mention.display += member.nick ? member.nick : member.display_name;
     } else {
-      regexps.value.member_mention.display = '不明なユーザー';
+      regexps.value.member_mention.display += '不明なユーザー';
     }
   }
 }
 
-function execCaptureGroup(re: RegExp, str: string) {
+function execCaptureGroup(re: RegExp, str: string): null | {
+  str: string;
+  index: number;
+  group: keyof Reg;
+} {
   const res = re.exec(str);
   if (!res) return res;
   for (const key in res.groups) {
-    if (res.groups[key]) {
+    if (res.groups[key] in regexps.value) {
       return {
         str: res[0],
         index: res.index,
-        group: res.groups[key],
+        group: res.groups[key] as keyof Reg,
       };
     }
   }
@@ -347,8 +295,85 @@ function getOlInfo(content: string): ListInfo {
 }
 </script>
 <template>
-  <div>
+  <div :style="{display: state.style}">
     {{ state.x }}
+    <i v-if="state.matchedKey === 'italics'">
+      <content-frame :content="regexps.italics.format(state.y)" :mention="props.mention" />
+    </i>
+    <strong v-else-if="state.matchedKey === 'bold'">
+      <content-frame :content="regexps.bold.format(state.y)" :mention="props.mention" />
+    </strong>
+    <strong v-else-if="state.matchedKey === 'bold_italics'">
+      <i>
+        <content-frame :content="regexps.bold_italics.format(state.y)" :mention="props.mention" />
+      </i>
+    </strong>
+    <u v-else-if="state.matchedKey === 'underline'">
+      <content-frame :content="regexps.underline.format(state.y)" :mention="props.mention" />
+    </u>
+    <u v-else-if="state.matchedKey === 'underline_italics'">
+      <i>
+        <content-frame :content="regexps.underline.format(state.y)" :mention="props.mention" />
+      </i>
+    </u>
+    <u v-else-if="state.matchedKey === 'underline_bold'">
+      <strong>
+        <content-frame :content="regexps.underline_bold.format(state.y)" :mention="props.mention" />
+      </strong>
+    </u>
+    <u v-else-if="state.matchedKey === 'underline_bold_italics'">
+      <strong>
+        <i>
+          <content-frame :content="regexps.underline_bold_italics.format(state.y)" :mention="props.mention" />
+        </i>
+      </strong>
+    </u>
+    <span v-else-if="state.matchedKey === 'strickthrough'" style="text-decoration: line-through;">
+      <content-frame :content="regexps.strickthrough.format(state.y)" :mention="props.mention" />
+    </span>
+    <a v-else-if="state.matchedKey === 'masked_links'" :href="regexps.masked_links.url">
+      <content-frame :content="regexps.masked_links.display" :mention="props.mention" />
+    </a>
+    <pre v-else-if="state.matchedKey === 'code_block'">
+      {{ regexps.code_block.format(state.y) }}
+    </pre>
+    <code v-else-if="state.matchedKey === 'code_inline'">
+      {{ regexps.code_inline.format(state.y) }}
+    </code>
+    <span v-else-if="state.matchedKey === 'spoiler_tag'">
+      <content-frame :content="regexps.spoiler_tag.format(state.y)" :mention="props.mention" />
+    </span>
+    <list-frame 
+      v-else-if="state.matchedKey === 'ul'"
+      :li="regexps.ul.li"
+      :mention="props.mention" />
+    <list-frame
+      v-else-if="state.matchedKey === 'ol'"
+      :li="regexps.ol.li"
+      :mention="props.mention" />
+    <h1 v-else-if="state.matchedKey === 'h1'">
+      <content-frame :content="regexps.h1.format(state.y)" :mention="props.mention" />
+    </h1>
+    <h2 v-else-if="state.matchedKey === 'h2'">
+      <content-frame :content="regexps.h2.format(state.y)" :mention="props.mention" />
+    </h2>
+    <h3 v-else-if="state.matchedKey === 'h3'">
+      <content-frame :content="regexps.h3.format(state.y)" :mention="props.mention" />
+    </h3>
+    <blockquote v-else-if="state.matchedKey === 'block_quotes'">
+      <p v-for="(str, index) in regexps.block_quotes.content" :key="index">
+        <content-frame :content="str" :mention="props.mention" />
+      </p>
+    </blockquote>
+    <span v-else-if="state.matchedKey === 'channel_mention'">
+      {{ regexps.channel_mention.display }}
+    </span>
+    <span v-else-if="state.matchedKey === 'role_mention'">
+      {{ regexps.role_mention.display }}
+    </span>
+    <span v-else-if="state.matchedKey === 'member_mention'">
+      {{ regexps.member_mention.display }}
+    </span>
     <content-frame v-if="state.matched" :content="state.z" :mention="props.mention" />
   </div>
 </template>
