@@ -106,6 +106,12 @@ const regexps = ref<Reg>({
     regexp: /(?<member_mention><@&\d+>)/m,
     display: '@ ',
   },
+  everyone_mention: {
+    regexp: /(?<everyone_mention>@everyone)/m,
+  },
+  here_mention: {
+    regexp: /(?<here_mention>@here)/m,
+  }
 });
 
 interface State {
@@ -381,9 +387,7 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention" 
     />
   </a>
-  <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">
-{{ regexps.code_block.format(state.y) }}
-  </pre>
+  <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">{{ regexps.code_block.format(state.y) }}</pre>
   <code v-else-if="state.matchedKey === 'code_inline'" class="px-1">
     {{ regexps.code_inline.format(state.y) }}
   </code>
@@ -440,6 +444,12 @@ function getOlInfo(content: string): ListInfo {
   </span>
   <span v-else-if="state.matchedKey === 'member_mention'" class="mention px-1">
     {{ regexps.member_mention.display }}
+  </span>
+  <span v-else-if="state.matchedKey === 'everyone_mention'" class="mention px-1">
+    @everyone
+  </span>
+  <span v-else-if="state.matchedKey === 'here_mention'" class="mention px-1">
+    @here
   </span>
   <content-frame 
     v-if="state.matched" 

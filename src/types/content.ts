@@ -51,4 +51,10 @@ export interface Reg {
   channel_mention: MentionReg;
   role_mention: MentionReg;
   member_mention: MentionReg;
+  everyone_mention: {
+    regexp: RegExp;
+  };
+  here_mention: {
+    regexp: RegExp;
+  };
 }
