@@ -22,6 +22,9 @@ export interface Reg {
   underline_bold: RegContent;
   underline_bold_italics: RegContent;
   strickthrough: RegContent;
+  links: {
+    regexp: RegExp;
+  };
   masked_links: {
     regexp: RegExp;
     display: string;

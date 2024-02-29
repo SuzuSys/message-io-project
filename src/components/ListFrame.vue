@@ -13,15 +13,27 @@ interface ListProps {
 const props = defineProps<ListProps>();
 </script>
 <template>
-  <ol v-if="props.li[0].first_number" :start="props.li[0].first_number">
+  <ol 
+    v-if="props.li[0].first_number" 
+    :start="props.li[0].first_number"
+    :style="{marginLeft: props.li[0].first_number.toString().length * 8 + 10 + 'px'}"
+  >
     <li v-for="(li, index) in props.li" :key="index">
-      <content-frame :content="li.content" :mention="props.mention" />
+      <content-frame 
+        :content="li.content" 
+        :except="[]"
+        :mention="props.mention" 
+      />
       <list-frame v-if="li.child" :li="li.child" :mention="props.mention" />
     </li>
   </ol>
-  <ul v-else>
+  <ul v-else :style="{marginLeft: '20px'}">
     <li v-for="(li, index) in props.li" :key="index">
-      <content-frame :content="li.content" :mention="props.mention" />
+      <content-frame 
+        :content="li.content" 
+        :except="[]"
+        :mention="props.mention" 
+      />
       <list-frame v-if="li.child" :li="li.child" :mention="props.mention" />
     </li>
   </ul>
