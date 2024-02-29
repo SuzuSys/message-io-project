@@ -56,7 +56,7 @@ const regexps = ref<Reg>({
     url: '',
   },
   code_block: {
-    regexp: /(?<code_block>`{3}[^]+`{3})/m,
+    regexp: /(?<code_block>`{3}(?:[^](?!`{3}))*[^]`{3})/m,
     format: str => str.slice(3, -3),
   },
   code_inline: {
@@ -172,7 +172,6 @@ if (res) {
         info = r.group === 'ul' ? getUlInfo(r.str) : getOlInfo(r.str);
         const level = ((info.spaces-1) - (info.spaces-1) % (n+1)) / (n+1) + 1
         if (currentLevel < level) {
-          console.log('level: ' + level + 'n: ' + n + 'info_spaces: ' + info.spaces);
           const parent = elArray.slice(-1)[0];
           parent.child = [];
           parent.child.push({
@@ -382,10 +381,10 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention" 
     />
   </a>
-  <pre v-else-if="state.matchedKey === 'code_block'">
-    {{ regexps.code_block.format(state.y) }}
+  <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">
+{{ regexps.code_block.format(state.y) }}
   </pre>
-  <code v-else-if="state.matchedKey === 'code_inline'">
+  <code v-else-if="state.matchedKey === 'code_inline'" class="px-1">
     {{ regexps.code_inline.format(state.y) }}
   </code>
   <span v-else-if="state.matchedKey === 'spoiler_tag'">
@@ -452,6 +451,11 @@ function getOlInfo(content: string): ListInfo {
 <style scoped>
 code, pre {
   font-family: Consolas, monospace;
+  background-color: #eeeeee;
+  border-radius: 2px;
+}
+pre {
+  white-space: pre-wrap;
 }
 blockquote {
   border-left: 5px solid gray;

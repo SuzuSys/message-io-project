@@ -33,12 +33,12 @@ const props = defineProps<MessageProps>();
           </div>
         </v-col>
       </v-row>
-      <v-row class="px-5">
+      <div class="ma-3">
         <content-frame 
           :content="props.message.content" 
           :except="[]"
           :mention="props.message" />
-      </v-row>
+      </div>
     </v-card-text>
   </v-card>
 </template>
