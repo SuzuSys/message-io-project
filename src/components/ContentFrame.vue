@@ -170,8 +170,9 @@ if (res) {
         state.value.z = state.value.z.slice(r.index + r.str.length);
         if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
         info = r.group === 'ul' ? getUlInfo(r.str) : getOlInfo(r.str);
-        const level = info.spaces === 0 ? 0 : ((info.spaces + n) - (info.spaces + n) % (n + 1)) / (n + 1);
+        const level = ((info.spaces-1) - (info.spaces-1) % (n+1)) / (n+1) + 1
         if (currentLevel < level) {
+          console.log('level: ' + level + 'n: ' + n + 'info_spaces: ' + info.spaces);
           const parent = elArray.slice(-1)[0];
           parent.child = [];
           parent.child.push({
@@ -298,7 +299,7 @@ function getOlInfo(content: string): ListInfo {
   const resContent = execNotNull(/\s+/, content);
   const c = content.slice(resContent.index + resContent.str.length);
   const res = execNotNull(/^\d+/, content);
-  const n = res.str.length;
+  const n = res.str.length + 1;
   const number = n > 9 ? 1000000000 : parseInt(res.str);
   return { spaces, content: c, n, first_number: number };
 }
@@ -423,7 +424,7 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention" 
     />
   </h3>
-  <blockquote v-else-if="state.matchedKey === 'block_quotes'">
+  <blockquote v-else-if="state.matchedKey === 'block_quotes'" class="py-1 px-2">
     <p v-for="(str, index) in regexps.block_quotes.content" :key="index">
       <content-frame 
         :content="str" 
@@ -448,3 +449,11 @@ function getOlInfo(content: string): ListInfo {
     :mention="props.mention" 
   />
 </template>
+<style scoped>
+code, pre {
+  font-family: Consolas, monospace;
+}
+blockquote {
+  border-left: 5px solid gray;
+}
+</style>

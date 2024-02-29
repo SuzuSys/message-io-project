@@ -24,12 +24,13 @@ const props = defineProps<MessageProps>();
         <v-col
           class="flex-grow-1 flex-shrink-0"
         >
-          {{ props.message.author.nick ? props.message.author.nick : props.message.author.display_name }}
-          <br>
-          <span class="text-disabled">{{ props.message.created_at }}</span>
-          <span class="text-disabled" v-if="props.message.edited_at">
-            ( edited at {{ props.message.edited_at }} )
-          </span>
+          <div>
+            {{ props.message.author.nick ? props.message.author.nick : props.message.author.display_name }}
+          </div>
+          <div>
+            <div class="text-disabled d-inline-flex">{{ props.message.created_at }}&emsp;</div>
+            <div class="text-disabled d-inline-flex" v-if="props.message.edited_at">( edited at {{ props.message.edited_at }} )</div>
+          </div>
         </v-col>
       </v-row>
       <v-row class="px-5">
