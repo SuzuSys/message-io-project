@@ -28,11 +28,11 @@ export interface Message {
       url: string;
       animated: boolean;
     };
-    roles: null | Array<{
+    top_role: null | {
       id: string;
       name: string;
       color: string;
-    }>;
+    };
   };
   created_at: string;
   edited_at: null | string;
@@ -60,11 +60,11 @@ export interface Message {
         url: string;
         animated: boolean;
       };
-      roles: null | Array<{
+      top_role: null | {
         id: string;
         name: string;
         color: string;
-      }>;
+      };
     }>
   }>;
   stickers: Array<{
@@ -104,6 +104,11 @@ export interface Message {
         key: string;
         url: string;
         animated: boolean;
+      };
+      top_role: null | {
+        id: string;
+        name: string;
+        color: string;
       };
     };
     created_at: string;

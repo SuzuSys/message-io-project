@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import ContentFrame from './ContentFrame.vue';
 import ReactionFrame from './ReactionFrame.vue'
 import { Message } from '../types/response';
@@ -6,7 +7,13 @@ interface MessageProps {
   message: Message;
 };
 const props = defineProps<MessageProps>();
-
+const authorNameColor = ref<string>('#ffffff');
+/*
+if (props.message.author.roles && props.message.author.roles.length > 0) {
+  authorNameColor.value = props.message.author.roles[0].color;
+  console.log(props.message.author.roles)
+}
+*/
 </script>
 <template>
   <v-card
@@ -25,7 +32,7 @@ const props = defineProps<MessageProps>();
         <v-col
           class="flex-grow-1 flex-shrink-0"
         >
-          <div>
+          <div :style="{ color: authorNameColor }">
             {{ props.message.author.nick ? props.message.author.nick : props.message.author.display_name }}
           </div>
           <div>
