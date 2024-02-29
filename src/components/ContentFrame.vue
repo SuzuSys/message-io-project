@@ -57,7 +57,12 @@ const regexps = ref<Reg>({
   },
   code_block: {
     regexp: /(?<code_block>`{3}(?:[^](?!`{3}))*[^]`{3})/m,
-    format: str => str.slice(3, -3),
+    format: str => {
+      str = str.slice(3, -3);
+      const res = /^\s*\n/.exec(str);
+      if (res) str = str.slice(res[0].length);
+      return str;
+    },
   },
   code_inline: {
     regexp: /(?<code_inline>(?:`[^`]+`(?!`))|(?:`{2}(?![^]*`{2}[^]*)[^]+`{2}(?!`)))/m,
@@ -461,7 +466,7 @@ function getOlInfo(content: string): ListInfo {
 <style scoped>
 code, pre {
   font-family: Consolas, monospace;
-  background-color: #eeeeee;
+  background-color: #2B2D31;
   border-radius: 2px;
 }
 pre {
@@ -471,7 +476,7 @@ blockquote {
   border-left: 5px solid gray;
 }
 .mention {
-  background-color: #E6E6FA;
+  background-color: #3B3B5F;
   border-radius: 2px;
 }
 </style>

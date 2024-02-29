@@ -75,4 +75,9 @@ function getParamConvertNumber(paramName: string) {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+
+channel-frame {
+  font-family: 'Roboto', sans-serif;
+}
 </style>

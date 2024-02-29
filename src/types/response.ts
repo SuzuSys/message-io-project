@@ -55,6 +55,16 @@ export interface Message {
       name: string;
       display_name: string;
       nick: null | string;
+      display_avatar: {
+        key: string;
+        url: string;
+        animated: boolean;
+      };
+      roles: null | Array<{
+        id: string;
+        name: string;
+        color: string;
+      }>;
     }>
   }>;
   stickers: Array<{

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ContentFrame from './ContentFrame.vue';
+import ReactionFrame from './ReactionFrame.vue'
 import { Message } from '../types/response';
 interface MessageProps {
   message: Message;
@@ -38,6 +39,11 @@ const props = defineProps<MessageProps>();
           :content="props.message.content" 
           :except="[]"
           :mention="props.message" />
+      </div>
+      <div v-if="props.message.reactions.length > 0" class="ma-3">
+        <reaction-frame
+          :emoji="props.message.reactions" 
+        />
       </div>
     </v-card-text>
   </v-card>
