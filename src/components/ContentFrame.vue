@@ -432,13 +432,13 @@ function getOlInfo(content: string): ListInfo {
       />
     </p>
   </blockquote>
-  <span v-else-if="state.matchedKey === 'channel_mention'">
+  <span v-else-if="state.matchedKey === 'channel_mention'" class="mention px-1">
     {{ regexps.channel_mention.display }}
   </span>
-  <span v-else-if="state.matchedKey === 'role_mention'">
+  <span v-else-if="state.matchedKey === 'role_mention'" class="mention px-1">
     {{ regexps.role_mention.display }}
   </span>
-  <span v-else-if="state.matchedKey === 'member_mention'">
+  <span v-else-if="state.matchedKey === 'member_mention'" class="mention px-1">
     {{ regexps.member_mention.display }}
   </span>
   <content-frame 
@@ -459,5 +459,9 @@ pre {
 }
 blockquote {
   border-left: 5px solid gray;
+}
+.mention {
+  background-color: #E6E6FA;
+  border-radius: 2px;
 }
 </style>
