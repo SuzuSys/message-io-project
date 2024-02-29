@@ -1,25 +1,25 @@
 export interface Channel {
-  id: number;
+  id: string;
   name: string;
   guild: {
-    id: number;
+    id: string;
     name: string;
   };
   category: null | {
-    id: number;
+    id: string;
     name: string;
   };
   messages: Array<Message>
 }
 
 export interface IncompleteChannel {
-  id: number;
+  id: string;
 }
 
 export interface Message {
-  id: number;
+  id: string;
   author: {
-    id: number;
+    id: string;
     name: string;
     display_name: string;
     nick: null | string;
@@ -28,11 +28,11 @@ export interface Message {
       url: string;
       animated: boolean;
     };
-    roles: null | Array<{
-      id: number;
+    top_role: null | {
+      id: string;
       name: string;
       color: string;
-    }>;
+    };
   };
   created_at: string;
   edited_at: null | string;
@@ -46,28 +46,12 @@ export interface Message {
   reactions: Array<{
     count: number;
     emoji_obj: {
-      id: null | number;
+      id: null | string;
       url: string;
       animated: boolean;
     } | string;
     users: Array<{
-      id: number;
-      name: string;
-      display_name: string;
-      nick: null | string;
-    }>
-  }>;
-  stickers: Array<{
-    id: number;
-    name: string;
-    url: string;
-  }>;
-  reference: null | {
-    id: null | number;
-  } | {
-    id: number;
-    author: {
-      id: number;
+      id: string;
       name: string;
       display_name: string;
       nick: null | string;
@@ -75,6 +59,56 @@ export interface Message {
         key: string;
         url: string;
         animated: boolean;
+      };
+      top_role: null | {
+        id: string;
+        name: string;
+        color: string;
+      };
+    }>
+  }>;
+  stickers: Array<{
+    id: string;
+    name: string;
+    url: string;
+  }>;
+  mentions: Array<{
+    id: string;
+    name: string;
+    display_name: string;
+    nick: null | string
+  }>;
+  channel_mentions: Array<{
+    id: string;
+    name: string;
+    category: null | {
+      id: string;
+      name: string;
+    };
+  }>;
+  role_mentions: Array<{
+    id: string;
+    name: string;
+    color: string;
+  }>;
+  reference: null | {
+    id: null | string;
+  } | {
+    id: string;
+    author: {
+      id: string;
+      name: string;
+      display_name: string;
+      nick: null | string;
+      display_avatar: {
+        key: string;
+        url: string;
+        animated: boolean;
+      };
+      top_role: null | {
+        id: string;
+        name: string;
+        color: string;
       };
     };
     created_at: string;
@@ -86,7 +120,7 @@ export interface Message {
       content_type: null | string;
     }>;
     stickers: Array<{
-      id: number;
+      id: string;
       name: string;
       url: string;
     }>;
