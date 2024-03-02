@@ -51,5 +51,5 @@ jobs:
         if: steps.check-function.outcome == 'success'
         run: |
           pip3 install awscli
-          zip -r package.zip ./backend/${{ env.FUNCTION_NAME }}/*
+          zip -j package.zip ./backend/${{ env.FUNCTION_NAME }}/lambda_function.py
           aws lambda update-function-code --function-name ${{ env.FUNCTION_NAME }} --zip-file fileb://package.zip --publish
