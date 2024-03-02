@@ -1,0 +1,52 @@
+name: Lambda Deploy 
+on:
+  push:
+    branches:
+      - lambda
+
+env:
+  FUNCTION_NAME: message-io-register
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+        # OIDC
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GithubAction
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+        # 認証
+      - name: get-caller-identity is allowed to run on role.
+        run: aws sts get-caller-identity
+
+        # Python設定
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+        # Lambdaが存在するか一応確認する
+      - name: Check Function if Exists
+        id: check-function
+        continue-on-error: true
+        run: |
+          aws lambda get-function --function-name ${{ env.FUNCTION_NAME }}
+        
+        # デプロイ
+      - name: deploy to lambda
+        if: steps.check-function.outcome == 'success'
+        run: |
+          pip3 install awscli
+          zip deploy.zip ./${{ env.FUNCTION_NAME }}.py
+          aws lambda update-function-code --function-name ${{ env.FUNCTION_NAME }} --zip-file fileb://package.zip --publish
