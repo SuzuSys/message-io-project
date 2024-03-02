@@ -8,12 +8,9 @@ interface MessageProps {
 };
 const props = defineProps<MessageProps>();
 const authorNameColor = ref<string>('#ffffff');
-/*
-if (props.message.author.roles && props.message.author.roles.length > 0) {
-  authorNameColor.value = props.message.author.roles[0].color;
-  console.log(props.message.author.roles)
+if (props.message.author.top_role && props.message.author.top_role.color !== '#000000') {
+  authorNameColor.value = props.message.author.top_role.color;
 }
-*/
 </script>
 <template>
   <v-card
