@@ -171,6 +171,6 @@ class DiscordClient(discord.Client):
         await self.close()
 
 def lambda_handler(event, context):
-    print('deployment is successful!2')
+    print('deployment is successful!3')
     meta_dict = load_meta()
     DiscordClient(meta_dict).run(meta_dict["bot"]["token"])
