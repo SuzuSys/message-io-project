@@ -1,11 +1,14 @@
-name: Lambda Deploy 
+name: Message-IO Register Lambda Deploy
+
+env:
+  FUNCTION_NAME: message-io-register
+
 on:
   push:
     branches:
       - lambda
-
-env:
-  FUNCTION_NAME: message-io-register
+    paths:
+      - 'message-io-register/**'  
 
 jobs:
   deploy:
@@ -48,5 +51,5 @@ jobs:
         if: steps.check-function.outcome == 'success'
         run: |
           pip3 install awscli
-          zip deploy.zip ./${{ env.FUNCTION_NAME }}.py
+          zip deploy.zip ./${{ env.FUNCTION_NAME }}/lambda_function.py
           aws lambda update-function-code --function-name ${{ env.FUNCTION_NAME }} --zip-file fileb://deploy.zip --publish
