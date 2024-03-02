@@ -1,9 +1,8 @@
 # MY MEMO
 ```
-npm run build
-...
 git checkout main
 git subtree push --prefix dist origin gh-pages
+git subtree push -prefix backend origin lambda
 ```
 
 # Vue 3 + TypeScript + Vite
