@@ -53,6 +53,7 @@ def binary_search_message(messages, id, limit):
     return None
 
 def lambda_handler(event, context):
+    print('deployment is successful!')
     event = json.loads(event['body'])
     diff_type = type_check(event)
     if diff_type:
