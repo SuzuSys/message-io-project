@@ -8,7 +8,7 @@ on:
     branches:
       - lambda
     paths:
-      - 'message-io-register/**'  
+      - 'backend/message-io-register/**'  
 
 jobs:
   deploy:
@@ -51,5 +51,5 @@ jobs:
         if: steps.check-function.outcome == 'success'
         run: |
           pip3 install awscli
-          zip deploy.zip ./${{ env.FUNCTION_NAME }}/lambda_function.py
-          aws lambda update-function-code --function-name ${{ env.FUNCTION_NAME }} --zip-file fileb://deploy.zip --publish
+          zip -r package.zip ./backend/${{ env.FUNCTION_NAME }}/*
+          aws lambda update-function-code --function-name ${{ env.FUNCTION_NAME }} --zip-file fileb://package.zip --publish
