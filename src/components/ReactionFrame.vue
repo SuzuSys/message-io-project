@@ -12,6 +12,13 @@ const state = ref<State>({
   menu: Array(p.emoji.length).fill(false),
 });
 
+function NameColor(top_role: Message['reactions'][0]['users'][0]['top_role']): string {
+  if (top_role && top_role.color !== '#000000') {
+    return top_role.color;
+  }
+  return '#ffffff';
+}
+
 </script>
 <template>
   <div>
@@ -52,7 +59,7 @@ const state = ref<State>({
             <v-col
               class="flex-grow-1 flex-shrink-0 my-auto pa-1"
             >
-              <div>
+              <div :style="{ color: NameColor(user.top_role) }">
                 {{ user.nick ? user.nick : user.display_name }}
               </div>
             </v-col>
