@@ -10,7 +10,8 @@ interface requestData {
   limit: number | null;
 }
 
-const url = 'https://fqrkuiesr2pmebwkgvy7qczw3e0ljzse.lambda-url.us-east-1.on.aws/';
+const url =
+  'https://fqrkuiesr2pmebwkgvy7qczw3e0ljzse.lambda-url.us-east-1.on.aws/';
 const { execute } = useAxios(url, { method: 'POST' }, { immediate: false });
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -18,8 +19,7 @@ const requestData: requestData = {
   channel_id: getIntegerParam('channel_id'),
   next_message_id: null,
   limit: getParamConvertNumber('limit'),
-}
-console.log(requestData);
+};
 
 const channels = ref<Array<Channel>>([]);
 const incompleteChannelsId = ref<Array<string>>([]);
@@ -33,15 +33,15 @@ async function getResponse() {
       console.log(result.response);
       return;
     }
-    const responseData: Array<Channel|IncompleteChannel> = response.data;
-    responseData.forEach(el => {
+    const responseData: Array<Channel | IncompleteChannel> = response.data;
+    responseData.forEach((el) => {
       if ('name' in el) {
         channels.value.push(el);
       } else {
         incompleteChannelsId.value.push(el.id);
       }
     });
-    console.log(channels)
+    console.log(channels);
   } catch (e) {
     console.log(e);
   }
@@ -50,7 +50,7 @@ async function getResponse() {
 function getIntegerParam(paramName: string) {
   const paramStr = urlParams.get(paramName);
   const re = /^\d+$/;
-  if (paramStr && re.test(paramStr)) return paramStr
+  if (paramStr && re.test(paramStr)) return paramStr;
   return null;
 }
 
@@ -63,8 +63,8 @@ function getParamConvertNumber(paramName: string) {
 
 <template>
   <div>
-    <channel-frame 
-      v-for="c in channels" 
+    <channel-frame
+      v-for="c in channels"
       :key="c.id"
       :guild_name="c.guild.name"
       :category="c.category"

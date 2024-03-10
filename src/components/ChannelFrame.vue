@@ -13,10 +13,7 @@ interface ChannelProps {
 const props = defineProps<ChannelProps>();
 </script>
 <template>
-  <v-card
-    class="mx-auto"
-    max-width="800"
-  >
+  <v-card class="mx-auto" max-width="800">
     <v-card-title>
       {{ props.guild_name }}
       <span class="text-disabled">> </span>
@@ -26,10 +23,6 @@ const props = defineProps<ChannelProps>();
       </span>
       {{ props.channel_name }}
     </v-card-title>
-    <message-frame
-      v-for="m in props.messages"
-      :key="m.id"
-      :message="m"
-    />
+    <message-frame v-for="m in props.messages" :key="m.id" :message="m" />
   </v-card>
 </template>
