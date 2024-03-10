@@ -57,6 +57,7 @@ class DiscordClient(discord.Client):
                 "edited_at": f'{message.edited_at:%Y-%m-%d %H:%M:%S}' if message.edited_at else None,
                 "content": message.content,
                 "attachments": [{
+                    "id": str(attachment.id),
                     "url": attachment.url,
                     "filename": attachment.filename,
                     "content_type": attachment.content_type,
@@ -136,6 +137,7 @@ class DiscordClient(discord.Client):
                 message_dict["reference"]["edited_at"] = f'{referenced_message.edited_at:%Y-%m-%d %H:%M:%S}' if referenced_message.edited_at else None
                 message_dict["reference"]["content"] = referenced_message.content
                 message_dict["reference"]["attachments"] = [{
+                    "id": attachment.id,
                     "url": attachment.url,
                     "filename": attachment.filename,
                     "content_type": attachment.content_type,

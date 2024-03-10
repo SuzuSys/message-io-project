@@ -8,7 +8,7 @@ export interface ListStruct {
   child?: Array<ListStruct>;
   parent?: ListStruct;
   first_number?: number; // If the list is ol, this type is number. If ul, then undefined.
-};
+}
 export interface MentionReg {
   regexp: RegExp;
   display: string;
@@ -24,11 +24,14 @@ export interface Reg {
   strickthrough: RegContent;
   links: {
     regexp: RegExp;
+    is_image: boolean;
+    file?: string;
   };
   masked_links: {
     regexp: RegExp;
     display: string;
     url: string;
+    is_image: boolean;
   };
   code_block: RegContent;
   code_inline: RegContent;

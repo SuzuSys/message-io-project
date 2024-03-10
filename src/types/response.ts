@@ -9,7 +9,7 @@ export interface Channel {
     id: string;
     name: string;
   };
-  messages: Array<Message>
+  messages: Array<Message>;
 }
 
 export interface IncompleteChannel {
@@ -38,6 +38,7 @@ export interface Message {
   edited_at: null | string;
   content: string;
   attachments: Array<{
+    id: string;
     url: string;
     filename: string;
     content_type: null | string;
@@ -45,11 +46,13 @@ export interface Message {
   pinned: boolean;
   reactions: Array<{
     count: number;
-    emoji_obj: {
-      id: null | string;
-      url: string;
-      animated: boolean;
-    } | string;
+    emoji_obj:
+      | {
+          id: null | string;
+          url: string;
+          animated: boolean;
+        }
+      | string;
     users: Array<{
       id: string;
       name: string;
@@ -65,7 +68,7 @@ export interface Message {
         name: string;
         color: string;
       };
-    }>
+    }>;
   }>;
   stickers: Array<{
     id: string;
@@ -76,7 +79,7 @@ export interface Message {
     id: string;
     name: string;
     display_name: string;
-    nick: null | string
+    nick: null | string;
   }>;
   channel_mentions: Array<{
     id: string;
@@ -91,38 +94,42 @@ export interface Message {
     name: string;
     color: string;
   }>;
-  reference: null | {
-    id: null | string;
-  } | {
-    id: string;
-    author: {
-      id: string;
-      name: string;
-      display_name: string;
-      nick: null | string;
-      display_avatar: {
-        key: string;
-        url: string;
-        animated: boolean;
-      };
-      top_role: null | {
+  reference:
+    | null
+    | {
+        id: null | string;
+      }
+    | {
         id: string;
-        name: string;
-        color: string;
+        author: {
+          id: string;
+          name: string;
+          display_name: string;
+          nick: null | string;
+          display_avatar: {
+            key: string;
+            url: string;
+            animated: boolean;
+          };
+          top_role: null | {
+            id: string;
+            name: string;
+            color: string;
+          };
+        };
+        created_at: string;
+        edited_at: null | string;
+        content: string;
+        attachments: Array<{
+          id: string;
+          url: string;
+          filename: string;
+          content_type: null | string;
+        }>;
+        stickers: Array<{
+          id: string;
+          name: string;
+          url: string;
+        }>;
       };
-    };
-    created_at: string;
-    edited_at: null | string;
-    content: string;
-    attachments: Array<{
-      url: string;
-      filename: string;
-      content_type: null | string;
-    }>;
-    stickers: Array<{
-      id: string;
-      name: string;
-      url: string;
-    }>;
-  };
 }
