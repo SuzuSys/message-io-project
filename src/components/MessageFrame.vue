@@ -20,6 +20,7 @@ const attachedImages = ref<Array<string>>([]);
 const pushAttachedImage = (url: string) => {
   attachedImages.value.push(url);
 };
+console.log(props.message.embeds);
 </script>
 <template>
   <v-card class="mx-auto my-2" rounded="0" variant="text">

@@ -113,6 +113,7 @@ class DiscordClient(discord.Client):
                 } for role in message.role_mentions],
                 "embeds": [{
                     "url": embed.url,
+                    "type": embed.type,
                 } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),
