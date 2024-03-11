@@ -101,6 +101,9 @@ export interface Message {
       url: string | null;
       width: number | null;
     };
+    video: null | {
+      url: string | null;
+    };
   }>;
   reference:
     | null
