@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-// import { useAxios } from '@vueuse/integrations/useAxios';
 import ListFrame from './ListFrame.vue';
 import { Message } from '../types/response';
 import { ListStruct, Reg } from '../types/content';
@@ -14,6 +13,12 @@ interface ContentProps {
   };
 }
 const props = defineProps<ContentProps>();
+const emit = defineEmits<{
+  pushAttachedImage: [url: string];
+}>();
+const pushAttachedImage = (url: string) => {
+  emit('pushAttachedImage', url);
+};
 
 const regexps = ref<Reg>({
   italics: {
@@ -50,14 +55,12 @@ const regexps = ref<Reg>({
   },
   links: {
     regexp: /(?<links>https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+)/m,
-    is_image: false,
   },
   masked_links: {
     regexp:
       /(?<masked_links>\[(?![^]*https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))[^]*\S+[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))/m,
     display: '',
     url: '',
-    is_image: false,
   },
   code_block: {
     regexp: /(?<code_block>`{3}(?:[^](?!`{3}))*[^]`{3})/m,
@@ -250,22 +253,22 @@ if (res) {
       ).str;
     } else {
       url = state.value.y;
-      const re = /^https:\/\/cdn\.discordapp\.com\/attachments\/\d+\/\d\/.+$/;
+      const re = /^https:\/\/cdn\.discordapp\.com\/attachments\/\d+\/\d+\/.+$/;
       if (re.test(url)) {
         // discord attachments
         const reLeft =
-          /^https:\/\/cdn\.discordapp\.com\/attachments\/\d+\/\d\//;
+          /^https:\/\/cdn\.discordapp\.com\/attachments\/\d+\/\d+\//;
         const resLeft = execNotNull(reLeft, url);
         const resRight = /\?/.exec(url);
-        const resRight2 = resRight ? resRight.index - 1 : undefined;
-        regexps.value.links.file = url.slice(resLeft.index + 1, resRight2);
+        const resRight2 = resRight ? resRight.index : undefined;
+        regexps.value.links.file = url.slice(resLeft.str.length, resRight2);
       }
     }
-    judgeImageUrl(url).then((isImage) => {
-      regexps.value[
-        state.value.matchedKey as 'links' | 'masked_links'
-      ].is_image = isImage;
-    });
+    const imageUrlRegex = /\.(jpeg|jpg|gif|png|webp)(\?.+)?$/i;
+    if (imageUrlRegex.test(url)) {
+      console.log(url);
+      pushAttachedImage(url);
+    }
   } else if (state.value.matchedKey === 'channel_mention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const channel = props.mention.channel_mentions.find(
@@ -362,24 +365,6 @@ function getOlInfo(content: string): ListInfo {
   const number = n > 9 ? 1000000000 : parseInt(res.str);
   return { spaces, content: c, n, first_number: number };
 }
-
-async function judgeImageUrl(url: string): Promise<boolean> {
-  const imageUrlRegex = /\.(jpeg|jpg|gif|png|webp)$/i;
-  if (imageUrlRegex.test(url)) {
-    /*
-    const { execute } = useAxios();
-    const res = await execute(url);
-    if (res.response.value?.status === 200) {
-      return true;
-    } else {
-      return false;
-    }
-    */
-    return true;
-  } else {
-    return false;
-  }
-}
 </script>
 <template>
   {{ state.x }}
@@ -388,6 +373,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.italics.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </i>
   <strong v-else-if="state.matchedKey === 'bold'">
@@ -395,6 +381,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.bold.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </strong>
   <strong v-else-if="state.matchedKey === 'bold_italics'">
@@ -403,6 +390,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
         :content="regexps.bold_italics.format(state.y)"
         :except="[]"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
     </i>
   </strong>
@@ -411,6 +399,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.underline.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </u>
   <u v-else-if="state.matchedKey === 'underline_italics'">
@@ -419,6 +408,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
         :content="regexps.underline.format(state.y)"
         :except="[]"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
     </i>
   </u>
@@ -428,6 +418,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
         :content="regexps.underline_bold.format(state.y)"
         :except="[]"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
     </strong>
   </u>
@@ -438,6 +429,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
           :content="regexps.underline_bold_italics.format(state.y)"
           :except="[]"
           :mention="props.mention"
+          @push-attached-image="pushAttachedImage"
         />
       </i>
     </strong>
@@ -450,11 +442,30 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.strickthrough.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </span>
-  <a v-else-if="state.matchedKey === 'links'" :href="state.y">
-    {{ state.y }}
-  </a>
+  <span v-else-if="state.matchedKey === 'links'">
+    <a v-if="regexps.links.file" :href="state.y" class="clip px-1">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        :style="{ marginBottom: '-3px' }"
+      >
+        <path
+          fill="white"
+          d="M10.57 4.01a6.97 6.97 0 0 1 9.86 0l.54.55a6.99 6.99 0 0 1 0 9.88l-7.26 7.27a1 1 0 0 1-1.42-1.42l7.27-7.26a4.99 4.99 0 0 0 0-7.06L19 5.43a4.97 4.97 0 0 0-7.02 0l-8.02 8.02a3.24 3.24 0 1 0 4.58 4.58l6.24-6.24a1.12 1.12 0 0 0-1.58-1.58l-3.5 3.5a1 1 0 0 1-1.42-1.42l3.5-3.5a3.12 3.12 0 1 1 4.42 4.42l-6.24 6.24a5.24 5.24 0 0 1-7.42-7.42l8.02-8.02Z"
+          class=""
+        ></path>
+      </svg>
+      {{ regexps.links.file }}
+    </a>
+    <a v-else :href="state.y">
+      {{ state.y }}
+    </a>
+  </span>
   <a
     v-else-if="state.matchedKey === 'masked_links'"
     :href="regexps.masked_links.url"
@@ -463,6 +474,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.masked_links.display"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </a>
   <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">{{
@@ -476,23 +488,27 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.spoiler_tag.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </span>
   <list-frame
     v-else-if="state.matchedKey === 'ul'"
     :li="regexps.ul.li"
     :mention="props.mention"
+    @push-attached-image="pushAttachedImage"
   />
   <list-frame
     v-else-if="state.matchedKey === 'ol'"
     :li="regexps.ol.li"
     :mention="props.mention"
+    @push-attached-image="pushAttachedImage"
   />
   <h1 v-else-if="state.matchedKey === 'h1'">
     <content-frame
       :content="regexps.h1.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </h1>
   <h2 v-else-if="state.matchedKey === 'h2'">
@@ -500,6 +516,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.h2.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </h2>
   <h3 v-else-if="state.matchedKey === 'h3'">
@@ -507,6 +524,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
       :content="regexps.h3.format(state.y)"
       :except="[]"
       :mention="props.mention"
+      @push-attached-image="pushAttachedImage"
     />
   </h3>
   <blockquote v-else-if="state.matchedKey === 'block_quotes'" class="py-1 px-2">
@@ -515,6 +533,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
         :content="str"
         :except="['block_quotes']"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
     </p>
   </blockquote>
@@ -541,6 +560,7 @@ async function judgeImageUrl(url: string): Promise<boolean> {
     :content="state.z"
     :except="[]"
     :mention="props.mention"
+    @push-attached-image="pushAttachedImage"
   />
 </template>
 <style scoped>
@@ -559,5 +579,11 @@ blockquote {
 .mention {
   background-color: #3b3b5f;
   border-radius: 2px;
+}
+.clip {
+  background-color: #3b5e42;
+  border-radius: 2px;
+  text-decoration: none;
+  color: white;
 }
 </style>

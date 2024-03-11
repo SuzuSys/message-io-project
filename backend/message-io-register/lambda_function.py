@@ -111,6 +111,9 @@ class DiscordClient(discord.Client):
                     "name": role.name,
                     "color": str(role.color),
                 } for role in message.role_mentions],
+                "embeds": [{
+                    "url": embed.url,
+                } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),
                 } if message.reference else None,
