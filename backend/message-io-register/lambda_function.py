@@ -116,9 +116,9 @@ class DiscordClient(discord.Client):
                     "type": embed.type,
                     "any": embed,
                     "image": {
-                        "url": embed._image.url,
+                        "url": embed.image.url,
                         "width": embed.image.width,
-                    } if embed._image else None,
+                    } if embed.image else None,
                     "video": {
                         "url": embed.video.url,
                     } if embed.video else None,
