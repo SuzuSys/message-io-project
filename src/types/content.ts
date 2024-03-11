@@ -24,14 +24,12 @@ export interface Reg {
   strickthrough: RegContent;
   links: {
     regexp: RegExp;
-    is_image: boolean;
     file?: string;
   };
   masked_links: {
     regexp: RegExp;
     display: string;
     url: string;
-    is_image: boolean;
   };
   code_block: RegContent;
   code_inline: RegContent;

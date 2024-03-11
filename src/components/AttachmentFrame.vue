@@ -36,6 +36,7 @@ function getCategory(content_type: string | null): category {
       class="my-2"
     >
       <v-img :src="attachment.url" max-width="200px" max-height="200px"></v-img>
+      {{ attachment.id }}
     </v-card>
     <v-card
       v-else-if="getCategory(attachment.content_type) === 'audio'"

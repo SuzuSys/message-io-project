@@ -11,6 +11,12 @@ interface ListProps {
   };
 }
 const props = defineProps<ListProps>();
+const emit = defineEmits<{
+  pushAttachedImage: [url: string];
+}>();
+const pushAttachedImage = (url: string) => {
+  emit('pushAttachedImage', url);
+};
 </script>
 <template>
   <ol
@@ -25,8 +31,14 @@ const props = defineProps<ListProps>();
         :content="li.content"
         :except="[]"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
-      <list-frame v-if="li.child" :li="li.child" :mention="props.mention" />
+      <list-frame
+        v-if="li.child"
+        :li="li.child"
+        :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
+      />
     </li>
   </ol>
   <ul v-else :style="{ marginLeft: '20px' }">
@@ -35,8 +47,14 @@ const props = defineProps<ListProps>();
         :content="li.content"
         :except="[]"
         :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
       />
-      <list-frame v-if="li.child" :li="li.child" :mention="props.mention" />
+      <list-frame
+        v-if="li.child"
+        :li="li.child"
+        :mention="props.mention"
+        @push-attached-image="pushAttachedImage"
+      />
     </li>
   </ul>
 </template>
