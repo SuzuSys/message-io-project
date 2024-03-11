@@ -114,7 +114,7 @@ class DiscordClient(discord.Client):
                 "embeds": [{
                     "url": embed.url,
                     "type": embed.type,
-                    "any": embed,
+                    "any": json.dumps(embed),
                     "image": {
                         "url": embed.image.url,
                         "width": embed.image.width,
