@@ -114,6 +114,10 @@ class DiscordClient(discord.Client):
                 "embeds": [{
                     "url": embed.url,
                     "type": embed.type,
+                    "image": {
+                        "url": embed.image.url,
+                        "width": embed.image.width,
+                    } if embed.image else None,
                 } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),

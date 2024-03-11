@@ -95,8 +95,12 @@ export interface Message {
     color: string;
   }>;
   embeds: Array<{
-    url: string;
+    url: string | null;
     type: 'rich' | 'image' | 'video' | 'gifv' | 'article' | 'link';
+    image: null | {
+      url: string | null;
+      width: number | null;
+    };
   }>;
   reference:
     | null
