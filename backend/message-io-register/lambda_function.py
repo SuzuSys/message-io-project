@@ -112,16 +112,7 @@ class DiscordClient(discord.Client):
                     "color": str(role.color),
                 } for role in message.role_mentions],
                 "embeds": [{
-                    "url": embed.url,
-                    "type": embed.type,
-                    "any": json.dumps(embed),
-                    "image": {
-                        "url": embed.image.url,
-                        "width": embed.image.width,
-                    } if embed.image else None,
-                    "video": {
-                        "url": embed.video.url,
-                    } if embed.video else None,
+                    "any": json.dumps(embed.to_dict()),
                 } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),
