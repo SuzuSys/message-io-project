@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import ContentFrame from './ContentFrame.vue';
 import ReactionFrame from './ReactionFrame.vue';
 import AttachmentFrame from './AttachmentFrame.vue';
-import AttachedImageFrame from './AttachedImageFrame.vue';
+import EmbedFrame from './EmbedFrame.vue';
 import { Message } from '../types/response';
 interface MessageProps {
   message: Message;
@@ -16,11 +16,6 @@ if (
 ) {
   authorNameColor.value = props.message.author.top_role.color;
 }
-const attachedImages = ref<Array<string>>([]);
-const pushAttachedImage = (url: string) => {
-  attachedImages.value.push(url);
-};
-console.log(props.message.embeds);
 </script>
 <template>
   <v-card class="mx-auto my-2" rounded="0" variant="text">
@@ -58,7 +53,6 @@ console.log(props.message.embeds);
           :content="props.message.content"
           :except="[]"
           :mention="props.message"
-          @push-attached-image="pushAttachedImage"
         />
       </div>
       <div v-if="props.message.reactions.length > 0" class="ma-3">
@@ -67,8 +61,8 @@ console.log(props.message.embeds);
       <div v-if="props.message.attachments.length > 0" class="ma-3">
         <attachment-frame :attachments="props.message.attachments" />
       </div>
-      <div v-if="attachedImages.length > 0">
-        <attached-image-frame :urls="attachedImages" />
+      <div v-if="props.message.embeds.length > 0" class="ma-3">
+        <embed-frame :embeds="props.message.embeds" />
       </div>
     </v-card-text>
   </v-card>

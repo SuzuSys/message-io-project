@@ -13,12 +13,6 @@ interface ContentProps {
   };
 }
 const props = defineProps<ContentProps>();
-const emit = defineEmits<{
-  pushAttachedImage: [url: string];
-}>();
-const pushAttachedImage = (url: string) => {
-  emit('pushAttachedImage', url);
-};
 
 const regexps = ref<Reg>({
   italics: {
@@ -264,11 +258,6 @@ if (res) {
         regexps.value.links.file = url.slice(resLeft.str.length, resRight2);
       }
     }
-    const imageUrlRegex = /\.(jpeg|jpg|gif|png|webp)(\?.+)?$/i;
-    if (imageUrlRegex.test(url)) {
-      console.log(url);
-      pushAttachedImage(url);
-    }
   } else if (state.value.matchedKey === 'channel_mention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const channel = props.mention.channel_mentions.find(
@@ -373,7 +362,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.italics.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </i>
   <strong v-else-if="state.matchedKey === 'bold'">
@@ -381,7 +369,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.bold.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </strong>
   <strong v-else-if="state.matchedKey === 'bold_italics'">
@@ -390,7 +377,6 @@ function getOlInfo(content: string): ListInfo {
         :content="regexps.bold_italics.format(state.y)"
         :except="[]"
         :mention="props.mention"
-        @push-attached-image="pushAttachedImage"
       />
     </i>
   </strong>
@@ -399,7 +385,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.underline.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </u>
   <u v-else-if="state.matchedKey === 'underline_italics'">
@@ -408,7 +393,6 @@ function getOlInfo(content: string): ListInfo {
         :content="regexps.underline.format(state.y)"
         :except="[]"
         :mention="props.mention"
-        @push-attached-image="pushAttachedImage"
       />
     </i>
   </u>
@@ -418,7 +402,6 @@ function getOlInfo(content: string): ListInfo {
         :content="regexps.underline_bold.format(state.y)"
         :except="[]"
         :mention="props.mention"
-        @push-attached-image="pushAttachedImage"
       />
     </strong>
   </u>
@@ -429,7 +412,6 @@ function getOlInfo(content: string): ListInfo {
           :content="regexps.underline_bold_italics.format(state.y)"
           :except="[]"
           :mention="props.mention"
-          @push-attached-image="pushAttachedImage"
         />
       </i>
     </strong>
@@ -442,7 +424,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.strickthrough.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </span>
   <span v-else-if="state.matchedKey === 'links'">
@@ -474,7 +455,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.masked_links.display"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </a>
   <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">{{
@@ -488,27 +468,23 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.spoiler_tag.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </span>
   <list-frame
     v-else-if="state.matchedKey === 'ul'"
     :li="regexps.ul.li"
     :mention="props.mention"
-    @push-attached-image="pushAttachedImage"
   />
   <list-frame
     v-else-if="state.matchedKey === 'ol'"
     :li="regexps.ol.li"
     :mention="props.mention"
-    @push-attached-image="pushAttachedImage"
   />
   <h1 v-else-if="state.matchedKey === 'h1'">
     <content-frame
       :content="regexps.h1.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </h1>
   <h2 v-else-if="state.matchedKey === 'h2'">
@@ -516,7 +492,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.h2.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </h2>
   <h3 v-else-if="state.matchedKey === 'h3'">
@@ -524,7 +499,6 @@ function getOlInfo(content: string): ListInfo {
       :content="regexps.h3.format(state.y)"
       :except="[]"
       :mention="props.mention"
-      @push-attached-image="pushAttachedImage"
     />
   </h3>
   <blockquote v-else-if="state.matchedKey === 'block_quotes'" class="py-1 px-2">
@@ -533,7 +507,6 @@ function getOlInfo(content: string): ListInfo {
         :content="str"
         :except="['block_quotes']"
         :mention="props.mention"
-        @push-attached-image="pushAttachedImage"
       />
     </p>
   </blockquote>
@@ -560,7 +533,6 @@ function getOlInfo(content: string): ListInfo {
     :content="state.z"
     :except="[]"
     :mention="props.mention"
-    @push-attached-image="pushAttachedImage"
   />
 </template>
 <style scoped>

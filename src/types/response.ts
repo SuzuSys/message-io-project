@@ -102,6 +102,12 @@ export interface Message {
       width: null | number;
       height: null | string;
     };
+    title: null | string;
+    description: null | string;
+    provider: null | {
+      name: null | string;
+      url: null | string;
+    };
   }>;
   reference:
     | null
