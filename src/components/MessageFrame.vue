@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import ContentFrame from './ContentFrame.vue';
 import ReactionFrame from './ReactionFrame.vue';
 import AttachmentFrame from './AttachmentFrame.vue';
+import EmbedFrame from './EmbedFrame.vue';
 import { Message } from '../types/response';
 interface MessageProps {
   message: Message;
@@ -59,6 +60,9 @@ if (
       </div>
       <div v-if="props.message.attachments.length > 0" class="ma-3">
         <attachment-frame :attachments="props.message.attachments" />
+      </div>
+      <div v-if="props.message.embeds.length > 0" class="ma-3">
+        <embed-frame :embeds="props.message.embeds" />
       </div>
     </v-card-text>
   </v-card>
