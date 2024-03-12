@@ -1,8 +1,8 @@
 <script setup lang="ts">
-interface AttachedImageProps {
+interface EmbedProps {
   urls: Array<string>;
 }
-const p = defineProps<AttachedImageProps>();
+const p = defineProps<EmbedProps>();
 </script>
 <template>
   <div v-for="(url, index) in p.urls" :key="index">
