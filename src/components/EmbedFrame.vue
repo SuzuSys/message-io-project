@@ -16,6 +16,14 @@ type CleanedEnbed =
     }
   | {
       type: 'video';
+      video: {
+        url: string;
+        width: null | number;
+        height: null | number;
+      };
+    }
+  | {
+      type: 'youtube';
       url: string;
     }
   | {
@@ -41,8 +49,13 @@ p.embeds.forEach((embed) => {
       }
       break;
     case 'video':
-      if (embed.url) {
-        console.log(embed);
+      console.log(embed);
+      if (embed.provider?.name === 'YouTube' && embed.video?.url) {
+        cleanedEnbeds.value.push({
+          type: 'youtube',
+          url: embed.video.url,
+        });
+      } else if (embed.video && embed.video.url) {
         cleanedEnbeds.value.push(embed as CleanedEnbed);
       }
       break;
@@ -80,11 +93,14 @@ function adjustMaxHeight(height: number | null) {
     <v-card v-else-if="embed.type === 'video'" variant="flat" class="my-2">
       <video
         controls
-        :src="embed.url"
+        :src="embed.video.url"
         :style="{
           maxHeight: '200px',
         }"
       ></video>
+    </v-card>
+    <v-card v-else-if="embed.type === 'youtube'" variant="flat" class="my-2">
+      <iframe :src="embed.url"></iframe>
     </v-card>
     <v-card v-else-if="embed.type === 'link'" variant="flat" class="my-2">
       {{ embed }}
