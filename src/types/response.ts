@@ -100,7 +100,7 @@ export interface Message {
     thumbnail: null | {
       url: null | string;
       width: null | number;
-      height: null | string;
+      height: null | number;
     };
     title: null | string;
     description: null | string;
