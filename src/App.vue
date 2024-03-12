@@ -36,7 +36,7 @@ async function getResponse() {
     const responseData: (Channel | IncompleteChannel)[] = response.data;
     responseData.forEach((el) => {
       if ('name' in el) {
-        channels.value.push(el);
+        channels.value.push(Object.freeze(el));
       } else {
         incompleteChannelsId.value.push(el.id);
       }
