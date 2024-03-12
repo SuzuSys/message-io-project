@@ -95,10 +95,11 @@ export interface Message {
     color: string;
   }[];
   embeds: {
+    // refer to https://discord.com/developers/docs/resources/channel#embed-object
     url: string | null;
     type: 'rich' | 'image' | 'video' | 'gifv' | 'article' | 'link';
     thumbnail: null | {
-      url: null | string;
+      url: string;
       width: null | number;
       height: null | number;
     };
@@ -107,6 +108,16 @@ export interface Message {
     provider: null | {
       name: null | string;
       url: null | string;
+    };
+    image: null | {
+      url: string;
+      width: null | number;
+      height: null | number;
+    };
+    video: null | {
+      url: null | string;
+      width: null | number;
+      height: null | number;
     };
   }[];
   reference:
