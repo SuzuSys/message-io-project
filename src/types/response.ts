@@ -109,11 +109,6 @@ export interface Message {
       name: null | string;
       url: null | string;
     };
-    image: null | {
-      url: string;
-      width: null | number;
-      height: null | number;
-    };
     video: null | {
       url: null | string;
       width: null | number;
