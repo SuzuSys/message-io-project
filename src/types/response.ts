@@ -69,7 +69,7 @@ export interface Message {
         color: string;
       };
     }[];
-  };
+  }[];
   stickers: {
     id: string;
     name: string;
