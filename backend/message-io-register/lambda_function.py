@@ -125,6 +125,11 @@ class DiscordClient(discord.Client):
                         "name": embed.provider.name,
                         "url": embed.provider.url,
                     } if embed.provider else None,
+                    "image": {
+                        "url": embed.image.url,
+                        "width": embed.image.width,
+                        "height": embed.image.height,
+                    } if embed.image else None,
                     "video": {
                         "url": embed.video.url,
                         "width": embed.video.width,
