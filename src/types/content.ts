@@ -4,10 +4,10 @@ export interface RegContent {
 }
 export interface ListStruct {
   content: string;
-  currentArray: Array<ListStruct>;
-  child?: Array<ListStruct>;
+  currentArray: ListStruct[];
+  child?: ListStruct[];
   parent?: ListStruct;
-  first_number?: number; // If the list is ol, this type is number. If ul, then undefined.
+  firstNumber?: number; // If the list is ol, this type is number. If ul, then undefined.
 }
 export interface MentionReg {
   regexp: RegExp;
@@ -16,46 +16,46 @@ export interface MentionReg {
 export interface Reg {
   italics: RegContent;
   bold: RegContent;
-  bold_italics: RegContent;
+  boldItalics: RegContent;
   underline: RegContent;
-  underline_italics: RegContent;
-  underline_bold: RegContent;
-  underline_bold_italics: RegContent;
+  underlineItalics: RegContent;
+  underlineBold: RegContent;
+  underlineBoldItalics: RegContent;
   strickthrough: RegContent;
   links: {
     regexp: RegExp;
     file?: string;
   };
-  masked_links: {
+  maskedLinks: {
     regexp: RegExp;
     display: string;
     url: string;
   };
-  code_block: RegContent;
-  code_inline: RegContent;
-  spoiler_tag: RegContent;
+  codeBlock: RegContent;
+  codeInline: RegContent;
+  spoilerTag: RegContent;
   ul: {
     regexp: RegExp;
-    li: Array<ListStruct>;
+    li: ListStruct[];
   };
   ol: {
     regexp: RegExp;
-    li: Array<ListStruct>;
+    li: ListStruct[];
   };
   h1: RegContent;
   h2: RegContent;
   h3: RegContent;
-  block_quotes: {
+  blockQuotes: {
     regexp: RegExp;
-    content: Array<string>;
+    content: string[];
   };
-  channel_mention: MentionReg;
-  role_mention: MentionReg;
-  member_mention: MentionReg;
-  everyone_mention: {
+  channelMention: MentionReg;
+  roleMention: MentionReg;
+  memberMention: MentionReg;
+  everyoneMention: {
     regexp: RegExp;
   };
-  here_mention: {
+  hereMention: {
     regexp: RegExp;
   };
 }

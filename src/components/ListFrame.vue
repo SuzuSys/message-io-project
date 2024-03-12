@@ -3,7 +3,7 @@ import { Message } from '../types/response';
 import ContentFrame from './ContentFrame.vue';
 import { ListStruct } from '../types/content';
 interface ListProps {
-  li: Array<ListStruct>;
+  li: ListStruct[];
   mention: {
     mentions: Message['mentions'];
     channel_mentions: Message['channel_mentions'];
@@ -14,10 +14,10 @@ const props = defineProps<ListProps>();
 </script>
 <template>
   <ol
-    v-if="props.li[0].first_number"
-    :start="props.li[0].first_number"
+    v-if="props.li[0].firstNumber"
+    :start="props.li[0].firstNumber"
     :style="{
-      marginLeft: props.li[0].first_number.toString().length * 8 + 10 + 'px',
+      marginLeft: props.li[0].firstNumber.toString().length * 8 + 10 + 'px',
     }"
   >
     <li v-for="(li, index) in props.li" :key="index">

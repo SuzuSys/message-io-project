@@ -5,7 +5,7 @@ import { Message } from '../types/response';
 import { ListStruct, Reg } from '../types/content';
 interface ContentProps {
   content: string;
-  except: Array<keyof Reg>;
+  except: (keyof Reg)[];
   mention: {
     mentions: Message['mentions'];
     channel_mentions: Message['channel_mentions'];
@@ -23,24 +23,24 @@ const regexps = ref<Reg>({
     regexp: /(?<bold>\*{2}[^]+\*{2})/m,
     format: (str) => str.slice(2, -2),
   },
-  bold_italics: {
-    regexp: /(?<bold_italics>\*{3}[^]+\*{3})/m,
+  boldItalics: {
+    regexp: /(?<boldItalics>\*{3}[^]+\*{3})/m,
     format: (str) => str.slice(3, -3),
   },
   underline: {
     regexp: /(?<underline>_{2}[^]+_{2})/m,
     format: (str) => str.slice(2, -2),
   },
-  underline_italics: {
-    regexp: /(?<underline_italics>_{2}\*[^]+\*_{2})/m,
+  underlineItalics: {
+    regexp: /(?<underlineItalics>_{2}\*[^]+\*_{2})/m,
     format: (str) => str.slice(3, -3),
   },
-  underline_bold: {
-    regexp: /(?<underline_bold>_{2}\*{2}[^]+\*{2}_{2})/m,
+  underlineBold: {
+    regexp: /(?<underlineBold>_{2}\*{2}[^]+\*{2}_{2})/m,
     format: (str) => str.slice(4, -4),
   },
-  underline_bold_italics: {
-    regexp: /(?<underline_bold_italics>_{2}\*{3}[^]+\*{3}_{2})/m,
+  underlineBoldItalics: {
+    regexp: /(?<underlineBoldItalics>_{2}\*{3}[^]+\*{3}_{2})/m,
     format: (str) => str.slice(5, -5),
   },
   strickthrough: {
@@ -50,14 +50,14 @@ const regexps = ref<Reg>({
   links: {
     regexp: /(?<links>https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+)/m,
   },
-  masked_links: {
+  maskedLinks: {
     regexp:
-      /(?<masked_links>\[(?![^]*https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))[^]*\S+[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))/m,
+      /(?<maskedLinks>\[(?![^]*https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))[^]*\S+[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))/m,
     display: '',
     url: '',
   },
-  code_block: {
-    regexp: /(?<code_block>`{3}(?:[^](?!`{3}))*[^]`{3})/m,
+  codeBlock: {
+    regexp: /(?<codeBlock>`{3}(?:[^](?!`{3}))*[^]`{3})/m,
     format: (str) => {
       str = str.slice(3, -3);
       const res = /^\s*\n/.exec(str);
@@ -65,16 +65,16 @@ const regexps = ref<Reg>({
       return str;
     },
   },
-  code_inline: {
+  codeInline: {
     regexp:
-      /(?<code_inline>(?:`[^`]+`(?!`))|(?:`{2}(?![^]*`{2}[^]*)[^]+`{2}(?!`)))/m,
+      /(?<codeInline>(?:`[^`]+`(?!`))|(?:`{2}(?![^]*`{2}[^]*)[^]+`{2}(?!`)))/m,
     format: (str) => {
       const s = str.slice(1, -1);
       return s[s.length - 1] === '`' ? s.slice(1, -1) : s;
     },
   },
-  spoiler_tag: {
-    regexp: /(?<spoiler_tag>\|{2}[^\n]+\|{2})/m,
+  spoilerTag: {
+    regexp: /(?<spoilerTag>\|{2}[^\n]+\|{2})/m,
     format: (str) => str.slice(2, -2),
   },
   ul: {
@@ -97,27 +97,27 @@ const regexps = ref<Reg>({
     regexp: /(?<h3>^#{3}\s+\S+.*$)/m,
     format: (str) => str.slice(4),
   },
-  block_quotes: {
-    regexp: /(?<block_quotes>^>\s+\S+.*$)/m,
+  blockQuotes: {
+    regexp: /(?<blockQuotes>^>\s+\S+.*$)/m,
     content: [],
   },
-  channel_mention: {
-    regexp: /(?<channel_mention><#\d+>)/m,
+  channelMention: {
+    regexp: /(?<channelMention><#\d+>)/m,
     display: '# ',
   },
-  role_mention: {
-    regexp: /(?<role_mention><@&\d+>)/m,
+  roleMention: {
+    regexp: /(?<roleMention><@&\d+>)/m,
     display: '@ ',
   },
-  member_mention: {
-    regexp: /(?<member_mention><@&\d+>)/m,
+  memberMention: {
+    regexp: /(?<memberMention><@&\d+>)/m,
     display: '@ ',
   },
-  everyone_mention: {
-    regexp: /(?<everyone_mention>@everyone)/m,
+  everyoneMention: {
+    regexp: /(?<everyoneMention>@everyone)/m,
   },
-  here_mention: {
-    regexp: /(?<here_mention>@here)/m,
+  hereMention: {
+    regexp: /(?<hereMention>@here)/m,
   },
 });
 
@@ -143,8 +143,8 @@ const state = ref<IncompleteState | State>({
   z: undefined,
 });
 
-const keyofRegexps = Object.keys(regexps.value) as Array<keyof Reg>;
-const valueofRegExps: Array<RegExp> = [];
+const keyofRegexps = Object.keys(regexps.value) as (keyof Reg)[];
+const valueofRegExps: RegExp[] = [];
 keyofRegexps.forEach((key) => {
   if (!props.except.includes(key)) {
     valueofRegExps.push(regexps.value[key].regexp);
@@ -163,20 +163,20 @@ if (res) {
   state.value.y = res.str;
   state.value.z = props.content.slice(res.index + res.str.length);
   if (
-    ['ul', 'ol', 'h1', 'h2', 'h3', 'block_quotes'].includes(
+    ['ul', 'ol', 'h1', 'h2', 'h3', 'blockQuotes'].includes(
       state.value.matchedKey
     )
   ) {
     if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
     if (['ul', 'ol'].includes(state.value.matchedKey)) {
       let key = state.value.matchedKey as 'ul' | 'ol';
-      let elArray: Array<ListStruct> = regexps.value[key].li;
+      let elArray: ListStruct[] = regexps.value[key].li;
       let info =
         key === 'ul' ? getUlInfo(state.value.y) : getOlInfo(state.value.y);
       elArray.push({
         content: info.content,
         currentArray: regexps.value[key].li,
-        first_number: info.first_number,
+        firstNumber: info.firstNumber,
       });
       const n = info.n;
       let currentLevel = 0;
@@ -203,7 +203,7 @@ if (res) {
             content: info.content,
             currentArray: parent.child,
             parent,
-            first_number: info.first_number,
+            firstNumber: info.firstNumber,
           });
           elArray = parent.child;
           currentLevel += 1;
@@ -221,27 +221,27 @@ if (res) {
           currentLevel = level;
         }
       }
-    } else if (state.value.matchedKey === 'block_quotes') {
-      regexps.value.block_quotes.content.push(state.value.y.slice(2));
+    } else if (state.value.matchedKey === 'blockQuotes') {
+      regexps.value.blockQuotes.content.push(state.value.y.slice(2));
       let r;
-      while ((r = regexps.value.block_quotes.regexp.exec(state.value.z))) {
+      while ((r = regexps.value.blockQuotes.regexp.exec(state.value.z))) {
         if (r.index !== 0) break;
-        regexps.value.block_quotes.content.push(r[0].slice(2));
+        regexps.value.blockQuotes.content.push(r[0].slice(2));
         state.value.z = state.value.z.slice(r.index + r[0].length);
         if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
       }
     }
-  } else if (['links', 'masked_links'].includes(state.value.matchedKey)) {
+  } else if (['links', 'maskedLinks'].includes(state.value.matchedKey)) {
     let url;
-    if (state.value.matchedKey === 'masked_links') {
+    if (state.value.matchedKey === 'maskedLinks') {
       const reDisplay =
         /^\[(?![^]*https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*[^]*\]\(https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*\))[^]*\S+[^]*\]/;
-      regexps.value.masked_links.display = execNotNull(
+      regexps.value.maskedLinks.display = execNotNull(
         reDisplay,
         state.value.y
       ).str.slice(1, -1);
       const reUrl = /https?:\/\/[\w!?/+\-_~;.,*&@#$%()'[\]=]+\s*/;
-      url = regexps.value.masked_links.url = execNotNull(
+      url = regexps.value.maskedLinks.url = execNotNull(
         reUrl,
         state.value.y
       ).str;
@@ -258,36 +258,36 @@ if (res) {
         regexps.value.links.file = url.slice(resLeft.str.length, resRight2);
       }
     }
-  } else if (state.value.matchedKey === 'channel_mention') {
+  } else if (state.value.matchedKey === 'channelMention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const channel = props.mention.channel_mentions.find(
       (channel) => channel.id === enteredId
     );
     if (channel) {
       if (channel.category) {
-        regexps.value.channel_mention.display += channel.category.name + ' > ';
+        regexps.value.channelMention.display += channel.category.name + ' > ';
       }
-      regexps.value.channel_mention.display += channel.name;
+      regexps.value.channelMention.display += channel.name;
     } else {
-      regexps.value.channel_mention.display += '不明なチャンネル';
+      regexps.value.channelMention.display += '不明なチャンネル';
     }
-  } else if (state.value.matchedKey === 'role_mention') {
+  } else if (state.value.matchedKey === 'roleMention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const role = props.mention.role_mentions.find(
       (role) => role.id === enteredId
     );
-    regexps.value.role_mention.display += role ? role.name : '不明なロール';
-  } else if (state.value.matchedKey === 'member_mention') {
+    regexps.value.roleMention.display += role ? role.name : '不明なロール';
+  } else if (state.value.matchedKey === 'memberMention') {
     const enteredId = execNotNull(/\d+/, state.value.y).str;
     const member = props.mention.mentions.find(
       (member) => member.id === enteredId
     );
     if (member) {
-      regexps.value.member_mention.display += member.nick
+      regexps.value.memberMention.display += member.nick
         ? member.nick
         : member.display_name;
     } else {
-      regexps.value.member_mention.display += '不明なユーザー';
+      regexps.value.memberMention.display += '不明なユーザー';
     }
   }
 }
@@ -330,7 +330,7 @@ interface ListInfo {
   spaces: number;
   content: string;
   n: number;
-  first_number?: number;
+  firstNumber?: number;
 }
 
 // content contains elements of ul
@@ -352,7 +352,7 @@ function getOlInfo(content: string): ListInfo {
   const res = execNotNull(/^\d+/, content);
   const n = res.str.length + 1;
   const number = n > 9 ? 1000000000 : parseInt(res.str);
-  return { spaces, content: c, n, first_number: number };
+  return { spaces, content: c, n, firstNumber: number };
 }
 </script>
 <template>
@@ -371,10 +371,10 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention"
     />
   </strong>
-  <strong v-else-if="state.matchedKey === 'bold_italics'">
+  <strong v-else-if="state.matchedKey === 'boldItalics'">
     <i>
       <content-frame
-        :content="regexps.bold_italics.format(state.y)"
+        :content="regexps.boldItalics.format(state.y)"
         :except="[]"
         :mention="props.mention"
       />
@@ -387,7 +387,7 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention"
     />
   </u>
-  <u v-else-if="state.matchedKey === 'underline_italics'">
+  <u v-else-if="state.matchedKey === 'underlineItalics'">
     <i>
       <content-frame
         :content="regexps.underline.format(state.y)"
@@ -396,20 +396,20 @@ function getOlInfo(content: string): ListInfo {
       />
     </i>
   </u>
-  <u v-else-if="state.matchedKey === 'underline_bold'">
+  <u v-else-if="state.matchedKey === 'underlineBold'">
     <strong>
       <content-frame
-        :content="regexps.underline_bold.format(state.y)"
+        :content="regexps.underlineBold.format(state.y)"
         :except="[]"
         :mention="props.mention"
       />
     </strong>
   </u>
-  <u v-else-if="state.matchedKey === 'underline_bold_italics'">
+  <u v-else-if="state.matchedKey === 'underlineBoldItalics'">
     <strong>
       <i>
         <content-frame
-          :content="regexps.underline_bold_italics.format(state.y)"
+          :content="regexps.underlineBoldItalics.format(state.y)"
           :except="[]"
           :mention="props.mention"
         />
@@ -448,24 +448,24 @@ function getOlInfo(content: string): ListInfo {
     </a>
   </span>
   <a
-    v-else-if="state.matchedKey === 'masked_links'"
-    :href="regexps.masked_links.url"
+    v-else-if="state.matchedKey === 'maskedLinks'"
+    :href="regexps.maskedLinks.url"
   >
     <content-frame
-      :content="regexps.masked_links.display"
+      :content="regexps.maskedLinks.display"
       :except="[]"
       :mention="props.mention"
     />
   </a>
-  <pre v-else-if="state.matchedKey === 'code_block'" class="px-1">{{
-    regexps.code_block.format(state.y)
+  <pre v-else-if="state.matchedKey === 'codeBlock'" class="px-1">{{
+    regexps.codeBlock.format(state.y)
   }}</pre>
-  <code v-else-if="state.matchedKey === 'code_inline'" class="px-1">
-    {{ regexps.code_inline.format(state.y) }}
+  <code v-else-if="state.matchedKey === 'codeInline'" class="px-1">
+    {{ regexps.codeInline.format(state.y) }}
   </code>
-  <span v-else-if="state.matchedKey === 'spoiler_tag'">
+  <span v-else-if="state.matchedKey === 'spoilerTag'">
     <content-frame
-      :content="regexps.spoiler_tag.format(state.y)"
+      :content="regexps.spoilerTag.format(state.y)"
       :except="[]"
       :mention="props.mention"
     />
@@ -501,31 +501,28 @@ function getOlInfo(content: string): ListInfo {
       :mention="props.mention"
     />
   </h3>
-  <blockquote v-else-if="state.matchedKey === 'block_quotes'" class="py-1 px-2">
-    <p v-for="(str, index) in regexps.block_quotes.content" :key="index">
+  <blockquote v-else-if="state.matchedKey === 'blockQuotes'" class="py-1 px-2">
+    <p v-for="(str, index) in regexps.blockQuotes.content" :key="index">
       <content-frame
         :content="str"
-        :except="['block_quotes']"
+        :except="['blockQuotes']"
         :mention="props.mention"
       />
     </p>
   </blockquote>
-  <span v-else-if="state.matchedKey === 'channel_mention'" class="mention px-1">
-    {{ regexps.channel_mention.display }}
+  <span v-else-if="state.matchedKey === 'channelMention'" class="mention px-1">
+    {{ regexps.channelMention.display }}
   </span>
-  <span v-else-if="state.matchedKey === 'role_mention'" class="mention px-1">
-    {{ regexps.role_mention.display }}
+  <span v-else-if="state.matchedKey === 'roleMention'" class="mention px-1">
+    {{ regexps.roleMention.display }}
   </span>
-  <span v-else-if="state.matchedKey === 'member_mention'" class="mention px-1">
-    {{ regexps.member_mention.display }}
+  <span v-else-if="state.matchedKey === 'memberMention'" class="mention px-1">
+    {{ regexps.memberMention.display }}
   </span>
-  <span
-    v-else-if="state.matchedKey === 'everyone_mention'"
-    class="mention px-1"
-  >
+  <span v-else-if="state.matchedKey === 'everyoneMention'" class="mention px-1">
     @everyone
   </span>
-  <span v-else-if="state.matchedKey === 'here_mention'" class="mention px-1">
+  <span v-else-if="state.matchedKey === 'hereMention'" class="mention px-1">
     @here
   </span>
   <content-frame

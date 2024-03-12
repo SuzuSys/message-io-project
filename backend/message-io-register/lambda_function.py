@@ -125,6 +125,11 @@ class DiscordClient(discord.Client):
                         "name": embed.provider.name,
                         "url": embed.provider.url,
                     } if embed.provider else None,
+                    "video": {
+                        "url": embed.video.url,
+                        "width": embed.video.width,
+                        "height": embed.video.height,
+                    } if embed.video else None,
                 } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),
