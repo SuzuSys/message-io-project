@@ -6,7 +6,7 @@ interface ReactionProps {
 }
 const p = defineProps<ReactionProps>();
 interface State {
-  menu: Array<boolean>;
+  menu: boolean[];
 }
 const state = ref<State>({
   menu: Array(p.emoji.length).fill(false),

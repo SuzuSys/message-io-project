@@ -4,8 +4,8 @@ export interface RegContent {
 }
 export interface ListStruct {
   content: string;
-  currentArray: Array<ListStruct>;
-  child?: Array<ListStruct>;
+  currentArray: ListStruct[];
+  child?: ListStruct[];
   parent?: ListStruct;
   firstNumber?: number; // If the list is ol, this type is number. If ul, then undefined.
 }
@@ -36,18 +36,18 @@ export interface Reg {
   spoilerTag: RegContent;
   ul: {
     regexp: RegExp;
-    li: Array<ListStruct>;
+    li: ListStruct[];
   };
   ol: {
     regexp: RegExp;
-    li: Array<ListStruct>;
+    li: ListStruct[];
   };
   h1: RegContent;
   h2: RegContent;
   h3: RegContent;
   blockQuotes: {
     regexp: RegExp;
-    content: Array<string>;
+    content: string[];
   };
   channelMention: MentionReg;
   roleMention: MentionReg;

@@ -8,7 +8,7 @@ interface ChannelProps {
     name: string;
   };
   channel_name: string;
-  messages: Array<Message>;
+  messages: Message[];
 }
 const props = defineProps<ChannelProps>();
 </script>

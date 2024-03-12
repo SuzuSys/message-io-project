@@ -3,7 +3,7 @@ import { Message } from '../types/response';
 import ContentFrame from './ContentFrame.vue';
 import { ListStruct } from '../types/content';
 interface ListProps {
-  li: Array<ListStruct>;
+  li: ListStruct[];
   mention: {
     mentions: Message['mentions'];
     channel_mentions: Message['channel_mentions'];

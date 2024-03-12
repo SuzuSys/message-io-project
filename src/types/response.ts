@@ -9,7 +9,7 @@ export interface Channel {
     id: string;
     name: string;
   };
-  messages: Array<Message>;
+  messages: Message[];
 }
 
 export interface IncompleteChannel {
@@ -37,14 +37,14 @@ export interface Message {
   created_at: string;
   edited_at: null | string;
   content: string;
-  attachments: Array<{
+  attachments: {
     id: string;
     url: string;
     filename: string;
     content_type: null | string;
-  }>;
+  }[];
   pinned: boolean;
-  reactions: Array<{
+  reactions: {
     count: number;
     emoji_obj:
       | {
@@ -53,7 +53,7 @@ export interface Message {
           animated: boolean;
         }
       | string;
-    users: Array<{
+    users: {
       id: string;
       name: string;
       display_name: string;
@@ -68,33 +68,33 @@ export interface Message {
         name: string;
         color: string;
       };
-    }>;
-  }>;
-  stickers: Array<{
+    }[];
+  };
+  stickers: {
     id: string;
     name: string;
     url: string;
-  }>;
-  mentions: Array<{
+  }[];
+  mentions: {
     id: string;
     name: string;
     display_name: string;
     nick: null | string;
-  }>;
-  channel_mentions: Array<{
+  }[];
+  channel_mentions: {
     id: string;
     name: string;
     category: null | {
       id: string;
       name: string;
     };
-  }>;
-  role_mentions: Array<{
+  }[];
+  role_mentions: {
     id: string;
     name: string;
     color: string;
-  }>;
-  embeds: Array<{
+  }[];
+  embeds: {
     url: string | null;
     type: 'rich' | 'image' | 'video' | 'gifv' | 'article' | 'link';
     thumbnail: null | {
@@ -108,7 +108,7 @@ export interface Message {
       name: null | string;
       url: null | string;
     };
-  }>;
+  }[];
   reference:
     | null
     | {
@@ -135,16 +135,16 @@ export interface Message {
         created_at: string;
         edited_at: null | string;
         content: string;
-        attachments: Array<{
+        attachments: {
           id: string;
           url: string;
           filename: string;
           content_type: null | string;
-        }>;
-        stickers: Array<{
+        }[];
+        stickers: {
           id: string;
           name: string;
           url: string;
-        }>;
+        }[];
       };
 }

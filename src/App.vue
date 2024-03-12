@@ -21,8 +21,8 @@ const requestData: requestData = {
   limit: getParamConvertNumber('limit'),
 };
 
-const channels = ref<Array<Channel>>([]);
-const incompleteChannelsId = ref<Array<string>>([]);
+const channels = ref<Channel[]>([]);
+const incompleteChannelsId = ref<string[]>([]);
 getResponse();
 
 async function getResponse() {
@@ -33,7 +33,7 @@ async function getResponse() {
       console.log(result.response);
       return;
     }
-    const responseData: Array<Channel | IncompleteChannel> = response.data;
+    const responseData: (Channel | IncompleteChannel)[] = response.data;
     responseData.forEach((el) => {
       if ('name' in el) {
         channels.value.push(el);

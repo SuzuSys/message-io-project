@@ -5,7 +5,7 @@ import { Message } from '../types/response';
 import { ListStruct, Reg } from '../types/content';
 interface ContentProps {
   content: string;
-  except: Array<keyof Reg>;
+  except: (keyof Reg)[];
   mention: {
     mentions: Message['mentions'];
     channel_mentions: Message['channel_mentions'];
@@ -143,8 +143,8 @@ const state = ref<IncompleteState | State>({
   z: undefined,
 });
 
-const keyofRegexps = Object.keys(regexps.value) as Array<keyof Reg>;
-const valueofRegExps: Array<RegExp> = [];
+const keyofRegexps = Object.keys(regexps.value) as (keyof Reg)[];
+const valueofRegExps: RegExp[] = [];
 keyofRegexps.forEach((key) => {
   if (!props.except.includes(key)) {
     valueofRegExps.push(regexps.value[key].regexp);
@@ -170,7 +170,7 @@ if (res) {
     if (/^\n/.exec(state.value.z)) state.value.z = state.value.z.slice(1);
     if (['ul', 'ol'].includes(state.value.matchedKey)) {
       let key = state.value.matchedKey as 'ul' | 'ol';
-      let elArray: Array<ListStruct> = regexps.value[key].li;
+      let elArray: ListStruct[] = regexps.value[key].li;
       let info =
         key === 'ul' ? getUlInfo(state.value.y) : getOlInfo(state.value.y);
       elArray.push({
