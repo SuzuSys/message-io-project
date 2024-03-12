@@ -119,6 +119,12 @@ class DiscordClient(discord.Client):
                         "width": embed.thumbnail.width,
                         "height": embed.thumbnail.height,
                     } if embed.thumbnail else None,
+                    "title": embed.title,
+                    "description": embed.description,
+                    "provider": {
+                        "name": embed.provider.name,
+                        "url": embed.provider.url,
+                    } if embed.provider else None,
                 } for embed in message.embeds],
                 "reference": {
                     "id": str(message.reference.message_id),
