@@ -125,7 +125,9 @@ class DiscordClient(discord.Client):
                         "name": embed.provider.name,
                         "url": embed.provider.url,
                     } if embed.provider else None,
-                    "image": {
+                    "image": { 
+                        # Probably it will not be null unless embed.type is other than rich. 
+                        # When you want to get a image embedded by user, use thumbnail. 
                         "url": embed.image.url,
                         "width": embed.image.width,
                         "height": embed.image.height,
