@@ -97,12 +97,10 @@ export interface Message {
   embeds: Array<{
     url: string | null;
     type: 'rich' | 'image' | 'video' | 'gifv' | 'article' | 'link';
-    image: null | {
-      url: string | null;
-      width: number | null;
-    };
-    video: null | {
-      url: string | null;
+    thumbnail: null | {
+      url: null | string;
+      width: null | number;
+      height: null | string;
     };
   }>;
   reference:
